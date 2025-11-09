@@ -190,19 +190,21 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
         return false;
     };
     
-   this.refreshButtonPos = function(){	
-        if( (_pStartPosSpin.x - s_iOffsetX )> CANVAS_WIDTH - 210){	
-            _oSpinBut.setPosition(_pStartPosSpin.x - s_iOffsetX,_pStartPosSpin.y - s_iOffsetY);	
-        }	
+   this.refreshButtonPos = function(iNewX,iNewY){
+        _oSpinBut.setPosition(_pStartPosSpin.x - iNewX,_pStartPosSpin.y - iNewY);
+        _oInfoBut.setPosition(_pStartPosInfo.x - iNewX,_pStartPosInfo.y - iNewY);
+        _oAddLineBut.setPosition(_pStartPosLines.x - iNewX,_pStartPosLines.y - iNewY);
+        _oBetCoinBut.setPosition(_pStartPosCoin.x - iNewX,_pStartPosCoin.y - iNewY);
+        _oAutoSpinBut.setPosition(_pStartPosAutoSpin.x - iNewX,_pStartPosAutoSpin.y - iNewY);
         	
         if(DISABLE_SOUND_MOBILE === false || s_bMobile === false){	
-            _oAudioToggle.setPosition(_pStartPosAudio.x + s_iOffsetX,s_iOffsetY + _pStartPosAudio.y);	
+            _oAudioToggle.setPosition(_pStartPosAudio.x + iNewX,iNewY + _pStartPosAudio.y);
         }	
         if (_fRequestFullScreen && screenfull.isEnabled){	
-            _oButFullscreen.setPosition(_pStartPosFullscreen.x + s_iOffsetX,_pStartPosFullscreen.y + s_iOffsetY);	
+            _oButFullscreen.setPosition(_pStartPosFullscreen.x + iNewX,_pStartPosFullscreen.y + iNewY);
         }	
         	
-        _oButExit.setPosition(_pStartPosExit.x-s_iOffsetX,_pStartPosExit.y + s_iOffsetY);	
+        _oButExit.setPosition(_pStartPosExit.x-iNewX,_pStartPosExit.y + iNewY);
     };      
     
     this.unload = function(){

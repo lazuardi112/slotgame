@@ -1,93 +1,89 @@
-function CSpriteSheetTextButton(iXPos,iYPos,oSprite,szText,szFont,szColor,iFontSize,oContainer){
+function CSpriteSheetTextButton(iXPos,iYPos,oSprite,szText,szFont,szColor,iFontSize,oParentContainer){
+
     var _bDisable;
+
     var _iWidth;
     var _iHeight;
-    var _szColor;
+
     var _aCbCompleted;
     var _aCbOwner;
-    var _oListenerPress;
-    var _oListenerUp;
     
     var _oButton;
-    var _oButtonBg;
     var _oText;
-    var _oContainer;
+    var _oButtonHelper;
     
-    this._init =function(iXPos,iYPos,oSprite,szText,szFont,szColor,iFontSize,oContainer){
+    this._init =function(iXPos,iYPos,oSprite,szText,szFont,szColor,iFontSize,oParentContainer){
         _bDisable = false;
-        _szColor = szColor;
+
         _aCbCompleted=new Array();
         _aCbOwner =new Array();
-        _oContainer = oContainer;
         
-        _iWidth = oSprite.width/2;
-        _iHeight = oSprite.height;
-        
-        _oButton = new createjs.Container();
-        _oButton.x = iXPos;
-        _oButton.y = iYPos;
-        _oButton.regX = _iWidth/2;
-        _oButton.regY = _iHeight/2;
-        _oButton.cursor = "pointer";
-        
-        _oContainer.addChild(_oButton);
-        
-        var oData = {
-            images: [oSprite],
-            // width, height & registration point of each sprite
-            frames: {width: _iWidth, height: _iHeight},
-            animations: {state_enable: 0, state_disable: 1}
-        };
+        var oButtonSprite = createSprite(oSprite," ",0,0,oSprite.width/2,oSprite.height);
 
+        var iStep = 0;
+        var iWidth = oSprite.width/2;
+        var iHeight = oSprite.height;
+        var oData = {
+                        images: [oSprite],
+                        // width, height & registration point of each sprite
+                        frames: {width: iWidth, height: iHeight, regX: iWidth/2, regY: iHeight/2},
+                        animations: {state_true:[0],state_false:[1]}
+                   };
 
         var oSpriteSheet = new createjs.SpriteSheet(oData);
-        _oButtonBg = createSprite( oSpriteSheet,"state_enable",0,0,_iWidth,_iHeight);
-        _oButton.addChild(_oButtonBg);
+	_oButton = createSprite(oSpriteSheet,"state_true",iWidth/2,iHeight/2,iWidth,iHeight);
+        _oButton.x = iXPos;
+        _oButton.y = iYPos;
+        _oButton.stop();
+        oParentContainer.addChild(_oButton);
         
+        _oButtonHelper = new CButtonHelper(iXPos,iYPos,oSprite.width/2,oSprite.height,_oButton,oParentContainer);
+        _oButtonHelper.addEventListener(ON_MOUSE_UP, this.buttonRelease, this);
+        _oButtonHelper.addEventListener(ON_MOUSE_DOWN, this.buttonDown, this);
         
-        _oText = new CTLText(_oButton, 
-                    10, 10, _iWidth-20, _iHeight, 
+        _oText = new CTLText(oParentContainer,
+                    iXPos-iWidth/2, iYPos-iHeight/2, iWidth, iHeight,
                     iFontSize, "center", szColor, szFont, 1,
                     0, 0,
                     szText,
-                    true, true, false,
+                    true, true, true,
                     false );
-
-        this._initListener();
     };
     
     this.unload = function(){
-       _oButton.off("mousedown",_oListenerPress);
-       _oButton.off("pressup",_oListenerUp);
-       
-       _oContainer.removeChild(_oButton);
+        _oButton.off("mousedown");
+        _oButton.off("pressup");
+        oParentContainer.removeChild(_oButton);
+        oParentContainer.removeChild(_oText);
     };
     
     this.setVisible = function(bVisible){
         _oButton.visible = bVisible;
+        _oText.setVisible(bVisible);
     };
     
     this.enable = function(){
         _bDisable = false;
         
-        _oButtonBg.gotoAndStop("state_enable");
-	_oText.setColor(_szColor);
+	_oButton.gotoAndStop("state_true");
     };
     
     this.disable = function(){
         _bDisable = true;
         
-        _oButtonBg.gotoAndStop("state_disable");
-	_oText.setColor("#636363");
+	_oButton.gotoAndStop("state_false");
+    };
+    
+    this.setPosition = function(iX,iY){
+        _oButton.x = iX;
+        _oButton.y = iY;
+
+        _oText.setX(iX);
+        _oText.setY(iY);
     };
     
     this.setText = function(szText){
         _oText.refreshText(szText);
-    };
-    
-    this._initListener = function(){
-       _oListenerPress = _oButton.on("mousedown", this.buttonDown);
-       _oListenerUp = _oButton.on("pressup" , this.buttonRelease);      
     };
     
     this.addEventListener = function( iEvent,cbCompleted, cbOwner ){
@@ -100,7 +96,7 @@ function CSpriteSheetTextButton(iXPos,iYPos,oSprite,szText,szFont,szColor,iFontS
             return;
         }
 
-        playSound("press_but", 1, false);
+        playSound("press_but",1,false);
 
         _oButton.scaleX = 1;
         _oButton.scaleY = 1;
@@ -122,41 +118,5 @@ function CSpriteSheetTextButton(iXPos,iYPos,oSprite,szText,szFont,szColor,iFontS
        }
     };
     
-    this.setPosition = function(iXPos,iYPos){
-         _oButton.x = iXPos;
-         _oButton.y = iYPos;
-    };
-    
-    this.changeText = function(szText){
-        _oText.refreshText(szText);
-    };
-    
-    this.setX = function(iXPos){
-         _oButton.x = iXPos;
-    };
-    
-    this.setY = function(iYPos){
-         _oButton.y = iYPos;
-    };
-    
-    this.getButtonImage = function(){
-        return _oButton;
-    };
-
-    this.getX = function(){
-        return _oButton.x;
-    };
-    
-    this.getY = function(){
-        return _oButton.y;
-    };
-    
-    this.getText = function(){
-        return _oText.getString();
-    };
-
-    this._init(iXPos,iYPos,oSprite,szText,szFont,szColor,iFontSize,oContainer);
-    
-    return this;
-    
+    this._init(iXPos,iYPos,oSprite,szText,szFont,szColor,iFontSize,oParentContainer);
 }
