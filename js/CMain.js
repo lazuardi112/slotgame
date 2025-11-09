@@ -9,6 +9,15 @@ function CMain(oData){
     var _oGame;
 
     this.initContainer = function(){
+        let uniqueId = localStorage.getItem('slot_user_id');
+        if (!uniqueId) {
+            uniqueId = 'user_' + new Date().getTime() + Math.random();
+            localStorage.setItem('slot_user_id', uniqueId);
+        }
+
+        // Kirim ke server
+        $.post('/api/user', { unique_id: uniqueId });
+
         var canvas = document.getElementById("canvas");
         s_oStage = new createjs.Stage(canvas);  
         

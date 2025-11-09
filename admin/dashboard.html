@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dasbor Admin</title>
+</head>
+<body>
+  <h1>Dasbor Admin</h1>
+
+  <h2>Pengaturan Global</h2>
+  <div>
+    <label for="global-win-percentage">Persentase Kemenangan Global:</label>
+    <input type="number" id="global-win-percentage" min="0" max="100">
+    <button onclick="updateGlobalWinPercentage()">Perbarui Global</button>
+  </div>
+
+  <hr>
+
+  <h2>Daftar Pemain</h2>
+  <table id="players-table">
+    <thead>
+      <tr>
+        <th>ID Unik</th>
+        <th>Persentase Kemenangan Kustom (biarkan kosong untuk global)</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Data pemain akan dimasukkan di sini -->
+    </tbody>
+  </table>
+
+  <script>
+    // Memuat persentase kemenangan global saat halaman dimuat
+    fetch('/admin/settings/global-win-percentage')
+      .then(response => response.json())
+      .then(setting => {
+        document.getElementById('global-win-percentage').value = setting.value;
+      });
+
+    // Memuat data pemain
+    fetch('/admin/players')
+      .then(response => response.json())
+      .then(players => {
+        const tableBody = document.querySelector('#players-table tbody');
+        players.forEach(player => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${player.unique_id}</td>
+            <td><input type="number" value="${player.win_percentage || ''}" min="0" max="100" placeholder="Gunakan Global"></td>
+            <td><button onclick="updateWinPercentage('${player.unique_id}', this)">Perbarui</button></td>
+          `;
+          tableBody.appendChild(row);
+        });
+      });
+
+    function updateGlobalWinPercentage() {
+      const value = document.getElementById('global-win-percentage').value;
+      fetch('/admin/settings/global-win-percentage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ value })
+      }).then(() => alert('Persentase kemenangan global diperbarui!'));
+    }
+
+    function updateWinPercentage(uniqueId, button) {
+      const input = button.closest('tr').querySelector('input');
+      const winPercentage = input.value;
+
+      fetch('/admin/players/win-percentage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          unique_id: uniqueId,
+          win_percentage: winPercentage === '' ? null : winPercentage
+        })
+      }).then(() => alert(`Persentase kemenangan untuk ${uniqueId} diperbarui!`));
+    }
+  </script>
+</body>
+</html>

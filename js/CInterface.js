@@ -85,7 +85,7 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
                     1086, _pStartPosMoney.y, 278, 30, 	
                     30, "left", "#ffba00", FONT_GAME_1, 1,	
                     0, 0,	
-                    TEXT_WIN + ": 0.00"+TEXT_CURRENCY,	
+                    TEXT_WIN + ": 0"+TEXT_CURRENCY,
                     true, true, false,	
                     false );	
 

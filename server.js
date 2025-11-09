@@ -1,53 +1,171 @@
-const http = require('http');
-const fs = require('fs');
+const express = require('express');
+const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const session = require('express-session');
 
+const app = express();
 const port = 5001;
 
-http.createServer((req, res) => {
-  let filePath = '.' + req.url;
-  if (filePath === './') {
-    filePath = './index.html';
+// Middleware untuk mem-parsing body permintaan
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Middleware sesi
+app.use(session({
+  secret: 'secret-key-for-admin',
+  resave: false,
+  saveUninitialized: true,
+}));
+
+// Menyajikan file statis dari direktori root
+app.use(express.static(path.join(__dirname, '/')));
+// Menyajikan file admin statis
+app.use('/admin', express.static(path.join(__dirname, 'admin')));
+
+// Middleware untuk memeriksa apakah pengguna admin telah login
+function isAdmin(req, res, next) {
+  if (req.session.isAdmin) {
+    return next();
+  }
+  res.redirect('/admin');
+}
+
+// Membuat atau membuka database SQLite
+const db = new sqlite3.Database('./slot_game.db', (err) => {
+  if (err) {
+    console.error(err.message);
+  }
+  console.log('Terhubung ke database SQLite.');
+});
+
+// Membuat tabel jika belum ada
+db.serialize(() => {
+  db.run(`CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    unique_id TEXT NOT NULL UNIQUE,
+    win_percentage INTEGER
+  )`);
+
+  db.run(`CREATE TABLE IF NOT EXISTS settings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    value INTEGER
+  )`);
+
+  // Memasukkan pengaturan global default jika belum ada
+  db.run('INSERT OR IGNORE INTO settings (name, value) VALUES (?, ?)', ['global_win_percentage', 10]);
+});
+
+
+// Rute API untuk melacak pengguna
+app.post('/api/user', (req, res) => {
+  const { unique_id } = req.body;
+  if (!unique_id) {
+    return res.status(400).send('unique_id diperlukan');
   }
 
-  const extname = String(path.extname(filePath)).toLowerCase();
-  const mimeTypes = {
-    '.html': 'text/html',
-    '.js': 'text/javascript',
-    '.css': 'text/css',
-    '.json': 'application/json',
-    '.png': 'image/png',
-    '.jpg': 'image/jpg',
-    '.gif': 'image/gif',
-    '.svg': 'image/svg+xml',
-    '.wav': 'audio/wav',
-    '.mp4': 'video/mp4',
-    '.woff': 'application/font-woff',
-    '.ttf': 'application/font-ttf',
-    '.eot': 'application/vnd.ms-fontobject',
-    '.otf': 'application/font-otf',
-    '.wasm': 'application/wasm',
-    '.ico': 'image/x-icon'
-  };
-
-  const contentType = mimeTypes[extname] || 'application/octet-stream';
-
-  fs.readFile(filePath, (error, content) => {
-    if (error) {
-      if (error.code == 'ENOENT') {
-        fs.readFile('./404.html', (error, content) => {
-          res.writeHead(404, { 'Content-Type': 'text/html' });
-          res.end(content, 'utf-8');
-        });
-      } else {
-        res.writeHead(500);
-        res.end('Sorry, check with the site admin for error: ' + error.code + ' ..\n');
-      }
-    } else {
-      res.writeHead(200, { 'Content-Type': contentType });
-      res.end(content, 'utf-8');
+  const query = 'INSERT OR IGNORE INTO users (unique_id) VALUES (?)';
+  db.run(query, [unique_id], (err) => {
+    if (err) {
+      console.error('Kesalahan saat menyimpan pengguna:', err);
+      return res.status(500).send('Kesalahan server');
     }
+    res.status(200).send('Pengguna dilacak');
   });
-}).listen(port);
+});
 
-console.log(`Server running at http://localhost:${port}/`);
+// Rute API untuk mendapatkan persentase kemenangan
+app.post('/api/win-percentage', (req, res) => {
+    const { unique_id } = req.body;
+    if (!unique_id) {
+        return res.status(400).json({ error: 'unique_id diperlukan' });
+    }
+
+    // Pertama, coba dapatkan persentase kemenangan spesifik pengguna
+    db.get('SELECT win_percentage FROM users WHERE unique_id = ?', [unique_id], (err, userRow) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: 'Kesalahan server' });
+        }
+
+        if (userRow && userRow.win_percentage !== null) {
+            return res.json({ value: userRow.win_percentage });
+        } else {
+            // Jika tidak ada, dapatkan persentase kemenangan global
+            db.get('SELECT value FROM settings WHERE name = ?', ['global_win_percentage'], (err, globalRow) => {
+                if (err) {
+                    console.error(err);
+                    return res.status(500).json({ error: 'Kesalahan server' });
+                }
+                res.json(globalRow || { value: 10 }); // Default jika tidak ada
+            });
+        }
+    });
+});
+
+
+// Rute login admin
+app.post('/admin/login', (req, res) => {
+  const { username, password } = req.body;
+  if (username === 'admin' && password === 'admin123') {
+    req.session.isAdmin = true;
+    res.redirect('/admin/dashboard.html');
+  } else {
+    res.send('Nama pengguna atau kata sandi salah');
+  }
+});
+
+// Rute dasbor admin
+app.get('/admin/dashboard', isAdmin, (req, res) => {
+  res.sendFile(path.join(__dirname, 'admin', 'dashboard.html'));
+});
+
+// Rute API untuk mendapatkan semua pemain
+app.get('/admin/players', isAdmin, (req, res) => {
+  db.all('SELECT * FROM users', (err, rows) => {
+    if (err) {
+      console.error('Kesalahan saat mengambil pemain:', err);
+      return res.status(500).send('Kesalahan server');
+    }
+    res.json(rows);
+  });
+});
+
+// Rute API untuk mendapatkan persentase kemenangan global
+app.get('/admin/settings/global-win-percentage', isAdmin, (req, res) => {
+  db.get('SELECT value FROM settings WHERE name = ?', ['global_win_percentage'], (err, row) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send('Kesalahan server');
+    }
+    res.json(row);
+  });
+});
+
+// Rute API untuk memperbarui persentase kemenangan global
+app.post('/admin/settings/global-win-percentage', isAdmin, (req, res) => {
+  const { value } = req.body;
+  db.run('UPDATE settings SET value = ? WHERE name = ?', [value, 'global_win_percentage'], (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send('Kesalahan server');
+    }
+    res.sendStatus(200);
+  });
+});
+
+// Rute API untuk memperbarui persentase kemenangan pengguna
+app.post('/admin/players/win-percentage', isAdmin, (req, res) => {
+  const { unique_id, win_percentage } = req.body;
+  db.run('UPDATE users SET win_percentage = ? WHERE unique_id = ?', [win_percentage, unique_id], (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send('Kesalahan server');
+    }
+    res.sendStatus(200);
+  });
+});
+
+app.listen(port, () => {
+  console.log(`Server berjalan di http://localhost:${port}`);
+});

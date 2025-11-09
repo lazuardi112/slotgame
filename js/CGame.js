@@ -818,7 +818,16 @@ function CGame(){
         _iMoney -= _iTotBet;	
         _oInterface.refreshMoney(_iMoney);
         	
-        $(s_oMain).trigger("bet_placed",{bet:COIN_BET[_iCurCoinIndex],tot_bet:_iTotBet,payline:_iLastLineActive});
+        // Ambil persentase kemenangan dari server
+        const uniqueId = localStorage.getItem('slot_user_id');
+        $.post('/api/win-percentage', { unique_id: uniqueId }, (winPercentage) => {
+            $(s_oMain).trigger("bet_placed", {
+                bet: COIN_BET[_iCurCoinIndex],
+                tot_bet: _iTotBet,
+                payline: _iLastLineActive,
+                win_percentage: winPercentage.value
+            });
+        });
         
         _iCurState = GAME_STATE_SPINNING;
 
@@ -831,7 +840,10 @@ function CGame(){
             $(s_oMain).trigger("show_interlevel_ad");	
         }
 
-        if ( oData.res === true ){	
+        // Tentukan apakah putaran ini harus menjadi kemenangan
+        var shouldWin = Math.random() < (oData.win_percentage / 100);
+
+        if ( oData.res === true && shouldWin ){
             	//console.log(oData)
             _aFinalSymbolCombo = oData.pattern;	
             _aWinningLine = oData.win_lines;	
