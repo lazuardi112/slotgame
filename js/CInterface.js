@@ -42,28 +42,28 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
         this._initPaylines(oContainerSlot);
 
         var oSprite = s_oSpriteLibrary.getSprite('but_text');
-        _pStartPosInfo = {x:272,y:CANVAS_HEIGHT - oSprite.height/2 - 270};
+        _pStartPosInfo = {x:272,y:CANVAS_HEIGHT - oSprite.height/2 - 170};
         _oInfoBut = new CSpriteSheetTextButton(_pStartPosInfo.x,_pStartPosInfo.y,oSprite,TEXT_PAYTABLE,FONT_GAME_1,"#8d4402",34,oContainerSlot);        
         _oInfoBut.addEventListener(ON_MOUSE_UP, this._onInfo, this);
 
-        _pStartPosCoin = {x:520,y:CANVAS_HEIGHT - oSprite.height/2 - 270};
+        _pStartPosCoin = {x:520,y:CANVAS_HEIGHT - oSprite.height/2 - 170};
         _oBetCoinBut = new CSpriteSheetTextButton(_pStartPosCoin.x, _pStartPosCoin.y,oSprite,TEXT_COIN +" " + formatEntries(iCurBet),FONT_GAME_1,"#8d4402",34,oContainerSlot);      
         _oBetCoinBut.addEventListener(ON_MOUSE_UP, this._onBet, this);
         
-        _pStartPosLines = {x:758,y:CANVAS_HEIGHT - oSprite.height/2 - 270};
+        _pStartPosLines = {x:758,y:CANVAS_HEIGHT - oSprite.height/2 - 170};
         _oAddLineBut = new CSpriteSheetTextButton(_pStartPosLines.x,_pStartPosLines.y,oSprite,TEXT_LINES + " " + NUM_PAYLINES,FONT_GAME_1,"#8d4402",34,oContainerSlot);
         _oAddLineBut.addEventListener(ON_MOUSE_UP, this._onAddLine, this);
         
-        _pStartPosAutoSpin = {x:996 ,y:CANVAS_HEIGHT - oSprite.height/2 - 270};
+        _pStartPosAutoSpin = {x:996 ,y:CANVAS_HEIGHT - oSprite.height/2 - 170};
         _oAutoSpinBut = new CSpriteSheetTextButton(_pStartPosAutoSpin.x,_pStartPosAutoSpin.y,oSprite,TEXT_AUTO_SPIN,FONT_GAME_1,"#8d4402",34,oContainerSlot);
         _oAutoSpinBut.addEventListener(ON_MOUSE_UP, this._onAutoSpin, this);
         
-        _pStartPosSpin = {x:1234,y:CANVAS_HEIGHT - oSprite.height/2 -270};
+        _pStartPosSpin = {x:1234,y:CANVAS_HEIGHT - oSprite.height/2 -170};
         _oSpinBut = new CSpriteSheetTextButton(_pStartPosSpin.x,_pStartPosSpin.y,oSprite,TEXT_SPIN,FONT_GAME_1,"#8d4402",34,oContainerSlot);
         _oSpinBut.addEventListener(ON_MOUSE_UP, this._onSpin, this);
 
 
-        _pStartPosMoney = {x:148,y:CANVAS_HEIGHT - 390};
+        _pStartPosMoney = {x:148,y:CANVAS_HEIGHT - 290};
 	_oMoneyText = new CTLText(oContainerSlot, 	
                     _pStartPosMoney.x, _pStartPosMoney.y, 278, 30, 	
                     30, "left", "#ffba00", FONT_GAME_1, 1,	

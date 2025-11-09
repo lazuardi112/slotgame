@@ -2,18 +2,16 @@ function CMenu(){
     var _pStartPosAudio;
     var _pStartPosFullscreen;
     var _pStartPosCredits;
-    var _pStartPosDelete;
+    var _pStartPosPlay;
     
     var _fRequestFullScreen = null;
     var _fCancelFullScreen = null;
     var _oBg;
     var _oButPlay;
-    var _oButDeleteSavings;
     var _oAudioToggle;
     var _oButCredits;
     var _oButFullscreen;
     var _oFade;
-    var _oAreYouSurePanel;
     
     this._init = function(){
         _oBg = createBitmap(s_oSpriteLibrary.getSprite('bg_menu'));
@@ -30,7 +28,8 @@ function CMenu(){
         s_oAttachSection.addChild(oLogo);
         
         var oSprite = s_oSpriteLibrary.getSprite('but_play');
-        _oButPlay = new CGfxButton((CANVAS_WIDTH/2),CANVAS_HEIGHT -250,oSprite,s_oAttachSection);
+        _pStartPosPlay = {x: CANVAS_WIDTH/2, y: CANVAS_HEIGHT - 250};
+        _oButPlay = new CGfxButton(_pStartPosPlay.x,_pStartPosPlay.y,oSprite,s_oAttachSection);
         _oButPlay.addEventListener(ON_MOUSE_UP, this._onButPlayRelease, this);
 
         if(DISABLE_SOUND_MOBILE === false || s_bMobile === false){
@@ -111,6 +110,8 @@ function CMenu(){
     };
     
     this.refreshButtonPos = function(){
+        _oButPlay.setPosition(_pStartPosPlay.x, _pStartPosPlay.y);
+
         if(DISABLE_SOUND_MOBILE === false || s_bMobile === false){
             _oAudioToggle.setPosition(_pStartPosAudio.x - s_iOffsetX,s_iOffsetY + _pStartPosAudio.y);
         }
