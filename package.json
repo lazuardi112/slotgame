@@ -1,0 +1,11 @@
+{
+  "name": "slot-machine-zeus-treasures",
+  "version": "1.0.0",
+  "description": "A simple slot machine game",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
