@@ -1,81 +1,23 @@
-root { 
-    display: block;
-}
-
 html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-size: cover;
 }
 
-body{
-    background-color: #000;
-    background-repeat: repeat-x;
-    background-position: top;   
+#canvas {
+  width: 100%;
+  height: 100%;
 }
 
-*, *:before, *:after {
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
-     
-input, input:before, input:after {
-    -webkit-user-select: initial;
-    -khtml-user-select: initial;
-    -moz-user-select: initial;
-    -ms-user-select: initial;
-    user-select: initial;
-} 
-
-::selection { background: transparent;color:inherit; }
-::-moz-selection { background: transparent;color:inherit; }
-
-#canvas{
-    position: fixed;
-    width: 100%;
-    height: 100%;
+.check-fonts {
+  position: absolute;
+  opacity: 0;
+  font-family: 'robotoblack';
 }
 
-canvas {
-    image-rendering: optimizeSpeed;
-    image-rendering:-o-crisp-edges;
-    image-rendering:-webkit-optimize-contrast;
-    -ms-interpolation-mode: nearest-neighbor;
-    -ms-touch-action: none;
-}
-
-.ani_hack{
-    -webkit-perspective: 1000;
-    -webkit-backface-visibility: hidden;
-    
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    outline: none;
-    -webkit-tap-highlight-color: transparent; /* mobile webkit */
-}
-
-/***************FONTS*******************/
-@font-face {
-    font-family: 'robotoblack';
-    src: url('roboto-black-webfont.woff2') format('woff2'),
-         url('roboto-black-webfont.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-
-}
-.check-fonts{
-    opacity:0;
-}
-
-.check-font-1{
-    font-family: 'robotoblack';
+.check-font-1 {
+  font-family: 'robotoblack';
 }

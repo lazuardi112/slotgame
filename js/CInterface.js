@@ -42,33 +42,33 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
         this._initPaylines(oContainerSlot);
 
         var oSprite = s_oSpriteLibrary.getSprite('but_text');
-        _pStartPosInfo = {x:272,y:CANVAS_HEIGHT - oSprite.height/2 - 170};
+        _pStartPosInfo = {x:272,y:CANVAS_HEIGHT - oSprite.height/2 - 270};
         _oInfoBut = new CSpriteSheetTextButton(_pStartPosInfo.x,_pStartPosInfo.y,oSprite,TEXT_PAYTABLE,FONT_GAME_1,"#8d4402",34,oContainerSlot);        
         _oInfoBut.addEventListener(ON_MOUSE_UP, this._onInfo, this);
 
-        _pStartPosCoin = {x:520,y:CANVAS_HEIGHT - oSprite.height/2 - 170};
+        _pStartPosCoin = {x:520,y:CANVAS_HEIGHT - oSprite.height/2 - 270};
         _oBetCoinBut = new CSpriteSheetTextButton(_pStartPosCoin.x, _pStartPosCoin.y,oSprite,TEXT_COIN +" " + formatEntries(iCurBet),FONT_GAME_1,"#8d4402",34,oContainerSlot);      
         _oBetCoinBut.addEventListener(ON_MOUSE_UP, this._onBet, this);
         
-        _pStartPosLines = {x:758,y:CANVAS_HEIGHT - oSprite.height/2 - 170};
+        _pStartPosLines = {x:758,y:CANVAS_HEIGHT - oSprite.height/2 - 270};
         _oAddLineBut = new CSpriteSheetTextButton(_pStartPosLines.x,_pStartPosLines.y,oSprite,TEXT_LINES + " " + NUM_PAYLINES,FONT_GAME_1,"#8d4402",34,oContainerSlot);
         _oAddLineBut.addEventListener(ON_MOUSE_UP, this._onAddLine, this);
         
-        _pStartPosAutoSpin = {x:996 ,y:CANVAS_HEIGHT - oSprite.height/2 - 170};
+        _pStartPosAutoSpin = {x:996 ,y:CANVAS_HEIGHT - oSprite.height/2 - 270};
         _oAutoSpinBut = new CSpriteSheetTextButton(_pStartPosAutoSpin.x,_pStartPosAutoSpin.y,oSprite,TEXT_AUTO_SPIN,FONT_GAME_1,"#8d4402",34,oContainerSlot);
         _oAutoSpinBut.addEventListener(ON_MOUSE_UP, this._onAutoSpin, this);
         
-        _pStartPosSpin = {x:1234,y:CANVAS_HEIGHT - oSprite.height/2 -170};
+        _pStartPosSpin = {x:1234,y:CANVAS_HEIGHT - oSprite.height/2 -270};
         _oSpinBut = new CSpriteSheetTextButton(_pStartPosSpin.x,_pStartPosSpin.y,oSprite,TEXT_SPIN,FONT_GAME_1,"#8d4402",34,oContainerSlot);
         _oSpinBut.addEventListener(ON_MOUSE_UP, this._onSpin, this);
 
 
-        _pStartPosMoney = {x:148,y:CANVAS_HEIGHT - 290};
+        _pStartPosMoney = {x:148,y:CANVAS_HEIGHT - 390};
 	_oMoneyText = new CTLText(oContainerSlot, 	
                     _pStartPosMoney.x, _pStartPosMoney.y, 278, 30, 	
                     30, "left", "#ffba00", FONT_GAME_1, 1,	
                     0, 0,	
-                    TEXT_MONEY +": " + formatEntries(TOTAL_MONEY)+TEXT_CURRENCY,	
+                    TEXT_MONEY +": " + TEXT_CURRENCY + " " + formatEntries(TOTAL_MONEY),
                     true, true, false,	
                     false );	
 
@@ -77,7 +77,7 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
                     776, _pStartPosMoney.y, 278, 30, 	
                     30, "left", "#ffba00", FONT_GAME_1, 1,	
                     0, 0,	
-                    TEXT_BET +": "+formatEntries(iTotBet)+TEXT_CURRENCY,	
+                    TEXT_BET +": "+TEXT_CURRENCY + " " +formatEntries(iTotBet),
                     true, true, false,	
                     false );		
         	
@@ -85,7 +85,7 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
                     1086, _pStartPosMoney.y, 278, 30, 	
                     30, "left", "#ffba00", FONT_GAME_1, 1,	
                     0, 0,	
-                    TEXT_WIN + ": 0"+TEXT_CURRENCY,
+                    TEXT_WIN + ": " + TEXT_CURRENCY + " 0",
                     true, true, false,	
                     false );	
 
@@ -154,7 +154,7 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
         	
         var doc = window.document;	
         var docEl = doc.documentElement;	
-        _fRequestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;	
+        _fRequestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullScreen;
         _fCancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;	
         	
         if(ENABLE_FULLSCREEN === false){	
@@ -406,7 +406,7 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
     };
 
     this.refreshMoney = function(iMoney){	
-        _oMoneyText.refreshText(TEXT_MONEY +": " + formatEntries(iMoney) + TEXT_CURRENCY);	
+        _oMoneyText.refreshText(TEXT_MONEY +": " + TEXT_CURRENCY + " " + formatEntries(iMoney));
     };
     
     this.refreshBet = function(iBet){	
@@ -414,7 +414,7 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
     };	
     	
     this.refreshTotalBet = function(iTotBet){	
-        _oTotalBetText.refreshText(TEXT_BET +": "+ formatEntries(iTotBet) +TEXT_CURRENCY);	
+        _oTotalBetText.refreshText(TEXT_BET +": "+ TEXT_CURRENCY + " " + formatEntries(iTotBet));
     };
     
     this.refreshNumLines = function(iLines){
@@ -440,11 +440,11 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
     };
     
     this.resetWin = function(){	
-        _oWinText.refreshText(TEXT_WIN+": "+ formatEntries(0) );	
+        _oWinText.refreshText(TEXT_WIN+": " + TEXT_CURRENCY + " "+ formatEntries(0) );
     };	
     	
     this.refreshWinText = function(iWin){	
-        _oWinText.refreshText(TEXT_WIN + ": "+ formatEntries(iWin) );	
+        _oWinText.refreshText(TEXT_WIN + ": "+ TEXT_CURRENCY + " " + formatEntries(iWin) );
     };
     
     this.refreshFreeSpinNum = function(iNum){

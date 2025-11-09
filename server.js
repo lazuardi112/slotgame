@@ -43,7 +43,8 @@ db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     unique_id TEXT NOT NULL UNIQUE,
-    win_percentage INTEGER
+    win_percentage INTEGER,
+    credit INTEGER DEFAULT 0
   )`);
 
   db.run(`CREATE TABLE IF NOT EXISTS settings (
@@ -165,6 +166,19 @@ app.post('/admin/players/win-percentage', isAdmin, (req, res) => {
     res.sendStatus(200);
   });
 });
+
+// Rute API untuk menambah kredit
+app.post('/admin/add-credit', isAdmin, (req, res) => {
+    const { unique_id, amount } = req.body;
+    db.run('UPDATE users SET credit = credit + ? WHERE unique_id = ?', [amount, unique_id], function(err) {
+        if (err) {
+            console.error(err.message);
+            return res.status(500).send('Gagal memperbarui kredit.');
+        }
+        res.status(200).send('Kredit berhasil diperbarui.');
+    });
+});
+
 
 app.listen(port, () => {
   console.log(`Server berjalan di http://localhost:${port}`);

@@ -821,12 +821,14 @@ function CGame(){
         // Ambil persentase kemenangan dari server
         const uniqueId = localStorage.getItem('slot_user_id');
         $.post('/api/win-percentage', { unique_id: uniqueId }, (winPercentage) => {
-            $(s_oMain).trigger("bet_placed", {
-                bet: COIN_BET[_iCurCoinIndex],
-                tot_bet: _iTotBet,
-                payline: _iLastLineActive,
-                win_percentage: winPercentage.value
-            });
+            APIAttemptSpin(
+                _iTotBet,
+                COIN_BET[_iCurCoinIndex],
+                _iLastLineActive,
+                s_oGame.onSpinReceived,
+                s_oGame,
+                winPercentage.value
+            );
         });
         
         _iCurState = GAME_STATE_SPINNING;
@@ -840,11 +842,7 @@ function CGame(){
             $(s_oMain).trigger("show_interlevel_ad");	
         }
 
-        // Tentukan apakah putaran ini harus menjadi kemenangan
-        var shouldWin = Math.random() < (oData.win_percentage / 100);
-
-        if ( oData.res === true && shouldWin ){
-            	//console.log(oData)
+        if ( oData.res === true ){
             _aFinalSymbolCombo = oData.pattern;	
             _aWinningLine = oData.win_lines;	
             var fWinAmount = parseFloat(oData.tot_win);	
@@ -869,7 +867,6 @@ function CGame(){
                 if( bBonusWin ){	
                     _aBonusId.push(BONUS_GAME);	
                 }	
-                //GET TOTAL WIN FOR THIS SPIN	
                 _iTotWin = fWinAmount;	
                 	
             }else{	

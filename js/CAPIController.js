@@ -1,30 +1,19 @@
 var TOTAL_MONEY;
 var START_MONEY;
-var WIN_OCCURRENCE = 35;         //WIN PERCENTAGE. SET A VALUE FROM 0 TO 100.
-var FREESPIN_OCCURRENCE = 10;    //FREESPIN OCCURRENCE IF THERE IS A WINNING COMBO
-var BONUS_OCCURRENCE = 10;       //BONUS OCCURRENCE IF THERE IS A WINNING COMBO
-var SLOT_CASH = 1000000;             //THIS IS THE CURRENT SLOT CASH AMOUNT. THE GAME CHECKS IF THERE IS AVAILABLE CASH FOR WINNINGS.
+var WIN_OCCURRENCE; // Dihapus, akan menggunakan persentase dari admin
+var FREESPIN_OCCURRENCE = 10;
+var BONUS_OCCURRENCE = 10;
+var SLOT_CASH = 1000000;
 
-var NUM_FREESPIN = [3,4,5];     //THIS IS THE NUMBER OF FREESPINS IF IN THE FINAL WHEEL THERE ARE 3,4 OR 5 FREESPIN SYMBOLS
-var BONUS_PRIZE = [10,30,60,90,100]; //THIS IS THE LIST OF BONUS MULTIPLIERS.
+var NUM_FREESPIN = [3,4,5];
+var BONUS_PRIZE = [10,30,60,90,100];
 var BONUS_PRIZE_OCCURRENCE = [40,25,20,10,5];
-var MAX_PRIZES_BONUS = 5;     //MAX NUMBR OF PRIZES ASSIGNED IN BONUS GAME
+var MAX_PRIZES_BONUS = 5;
 
-var _iCoinBets = [5000, 10000, 15000, 20000, 25000, 30000, 35000, 40000, 45000, 50000]; //COIN BET VALUES
+var _iCoinBets = [5000, 10000, 20000, 50000, 100000, 200000, 500000, 1000000];
 
-/***********PAYTABLE********************/
-//EACH SYMBOL PAYTABLE HAS 5 VALUES THAT INDICATES THE MULTIPLIER FOR X1,X2,X3,X4 OR X5 COMBOS
-var PAYTABLE_VALUES = [ [0,0,5,20,100],    //PAYTABLE FOR SYMBOL 0
-                        [0,0,5,20,100], //PAYTABLE FOR SYMBOL 1
-                        [0,0,5,20,100], //PAYTABLE FOR SYMBOL 2
-                        [0,0,10,30,150],  //PAYTABLE FOR SYMBOL 3
-                        [0,0,20,50,200],   //PAYTABLE FOR SYMBOL 4
-                        [0,0,25,70,300],   //PAYTABLE FOR SYMBOL 5
-                        [0,0,25,100,500]   //PAYTABLE FOR SYMBOL 6
-                        
-                    ];
+var PAYTABLE_VALUES = [ [0,0,5,20,100], [0,0,5,20,100], [0,0,5,20,100], [0,0,10,30,150], [0,0,20,50,200], [0,0,25,70,300], [0,0,25,100,500] ];
 
-/*************************************/
 var _bBonus = false;
 var _bFreespinEnable = false;
 var _iMinWin;
@@ -33,26 +22,20 @@ var _iNumSymbolFreeSpin = 0;
 var _aCbCompleted = new Array();
 var _aCbOwner = new Array();
 var _aSymbolWin = new Array();
-var _iFreespinSymbolNumOccur = [50,30,20];//WHEN PLAYER GET FREESPIN, THIS ARRAY GET THE OCCURRENCE OF RECEIVING 3,4 OR 5 FREESPIN SYMBOLS IN THE WHEEL
+var _iFreespinSymbolNumOccur = [50,30,20];
 var _aPaylineCombo = new Array();
 var _aFinalSymbols;
-
     
 function APIgetSlotInfos(oCallback, oCallbackOwner){
-    
     oCallback.call(oCallbackOwner,{start_money:TOTAL_MONEY,bets:_iCoinBets,start_bet:_iCoinBets[0],paytable:PAYTABLE_VALUES});
-    
 }
 
-function APIAttemptSpin(iCurBet, iCoin,iNumBettingLines,oCallback, oCallbackOwner){
-    //CHECK IF iCurBet IS < DI iMoney OR THERE IS AN INVALID BET
+function APIAttemptSpin(iCurBet, iCoin, iNumBettingLines, oCallback, oCallbackOwner, iWinPercentage){
     if(iCurBet > TOTAL_MONEY){
         _dieError("INVALID BET: "+iCurBet+",money:"+TOTAL_MONEY,oCallback, oCallbackOwner);
         return;
     }
     
-
-    //DECREASING USER MONEY WITH THE CURRENT BET
     TOTAL_MONEY -= iCurBet;
     SLOT_CASH += iCurBet;
     
@@ -60,118 +43,69 @@ function APIAttemptSpin(iCurBet, iCoin,iNumBettingLines,oCallback, oCallbackOwne
     SLOT_CASH = parseFloat(SLOT_CASH.toFixed(2));
     
     _bBonus = false;
-
     var bFreespin = false;
     var oData;
     
-    //IF SLOT CASH IS LOWER THAN MINIMUM WIN, PLAYER MUST LOSE
-    if(SLOT_CASH < _iMinWin*iCoin){
-
-        //PLAYER MUST LOSE
-        generLosingPattern();
-        if(_bFreespinEnable === true){
-            _iTotFreeSpin--;
-
-            if(_iTotFreeSpin < 0){
-                    _iTotFreeSpin = 0;
-                    _bFreespinEnable = false;
-            }
-        }
-        
-        
-        
-        oData = {res:true,win:false,pattern:_aFinalSymbols,win_lines:{},money:TOTAL_MONEY,tot_win:0,freespin:false,
-                                            num_freespin:_iTotFreeSpin,bonus:false,bonus_prize:-1,cash:SLOT_CASH};
-                        
-        oCallback.call(oCallbackOwner,oData);
-        return;
-    }
-            
     var iRandOccur = Math.floor(Math.random()*100);
-    var iRand;
-    if(iRandOccur < WIN_OCCURRENCE){
-            //WIN
-            if(_bFreespinEnable === false && _bBonus === false){
-                    iRand = Math.floor(Math.random()*100);
-                    if(_iTotFreeSpin === 0 && iRand < (FREESPIN_OCCURRENCE+BONUS_OCCURRENCE)){
-                            //PLAYER GET BONUS OR FREESPIN
-                            iRand = Math.floor(Math.random()*(FREESPIN_OCCURRENCE+BONUS_OCCURRENCE)+1);
-                            
-                            if(iRand <= FREESPIN_OCCURRENCE){
-                                    bFreespin = true;
-                            }else if(SLOT_CASH >= (BONUS_PRIZE[0] * iCoin)){
-                                    _bBonus = true;
-                            }else{
-                                    //NOT ENOUGH MONEY FOR ANY BONUS PRIZE
-                                    _bBonus = false;
-                            }
 
+    if(iRandOccur < iWinPercentage){
+            //WIN
+            var iRand = Math.floor(Math.random()*100);
+            if(!_bFreespinEnable && !_bBonus && _iTotFreeSpin === 0 && iRand < (FREESPIN_OCCURRENCE+BONUS_OCCURRENCE)){
+                    iRand = Math.floor(Math.random()*(FREESPIN_OCCURRENCE+BONUS_OCCURRENCE)+1);
+                    if(iRand <= FREESPIN_OCCURRENCE){
+                            bFreespin = true;
+                    }else if(SLOT_CASH >= (BONUS_PRIZE[0] * iCoin)){
+                            _bBonus = true;
                     }
             }
 
             var iPrizeReceived = -1;
             var iBonusWin = 0;
             var iCont = 0;
+            var iTotWin;
             do{
                 generateRandomSymbols(bFreespin);
                 var aRet = checkWin(bFreespin,iNumBettingLines);
-                var iTotWin = 0;
+                iTotWin = 0;
                 for(var i=0;i<aRet.length;i++){
                         iTotWin += aRet[i]['amount'];
                 }
                 iTotWin *= iCoin;
-
-               
                 iCont++;
             }while(aRet.length === 0 || (iBonusWin+iTotWin) > SLOT_CASH || (iBonusWin+iTotWin) < iCurBet);
-            
             
             TOTAL_MONEY +=  (iTotWin + iBonusWin); 
             SLOT_CASH -=  (iTotWin + iBonusWin);
             
-            TOTAL_MONEY = parseFloat(TOTAL_MONEY.toFixed(2));
-            SLOT_CASH = parseFloat(SLOT_CASH.toFixed(2));
-    
-            //DECREASE FREESPIN NUMBER EVENTUALLY
             if(bFreespin && _iNumSymbolFreeSpin > 2){
                     _bFreespinEnable = true;
                     _iTotFreeSpin = NUM_FREESPIN[_iNumSymbolFreeSpin-3];
-
-            }else if(_bFreespinEnable === true){
+            }else if(_bFreespinEnable){
                     _iTotFreeSpin--;
-
                     if(_iTotFreeSpin < 0){
                             _iTotFreeSpin = 0;
                             _bFreespinEnable = false;
                     }
             }
             
-            
-           
-            
             oData =  {res:true,win:true,pattern:_aFinalSymbols,win_lines:aRet,money:TOTAL_MONEY,tot_win:iTotWin,freespin:bFreespin,
                         num_freespin:_iTotFreeSpin,bonus:_bBonus,bonus_prize:iPrizeReceived,cash:SLOT_CASH };
             
             oCallback.call(oCallbackOwner,oData);
-            return;
     }else{
             //LOSE
             generLosingPattern();
-            if(_bFreespinEnable === true){
+            if(_bFreespinEnable){
                 _iTotFreeSpin--;
-
                 if(_iTotFreeSpin < 0){
                         _iTotFreeSpin = 0;
                         _bFreespinEnable = false;
                 }
             }
-            
-            
-           
             oData = {res:true,win:false,pattern:_aFinalSymbols,win_lines:{},money:TOTAL_MONEY,tot_win:0,freespin:false,num_freespin:_iTotFreeSpin,
                         bonus:false,bonus_prize:-1};
             oCallback.call(oCallbackOwner,oData);
-            return;
     }
 }
 
@@ -183,87 +117,57 @@ function apiAttemptBonus(iCoin,oCallback, oCallbackOwner){
                     aPrizeLength.push(k);
             }
     }
-
-                    
     var iRandNumMultipliers = Math.floor(Math.random() * MAX_PRIZES_BONUS) + 1;
     var aPrizeList = new Array();
     var iTotWin = 0;
-  
     for(var k=0;k<iRandNumMultipliers;k++){
-        
         var iRandIndex = Math.floor(Math.random()*(aPrizeLength.length));
         var iPrizeReceived = aPrizeLength[iRandIndex];
         var iBonusWin = (BONUS_PRIZE[iPrizeReceived]*iCoin);
-        
-        
-
         if(iTotWin+iBonusWin > SLOT_CASH){
             iBonusWin = 0;
         }
-        
         iTotWin += iBonusWin;
         aPrizeList.push(iBonusWin);
-        
         TOTAL_MONEY += iBonusWin; 
         SLOT_CASH -= iBonusWin;
-        
-        TOTAL_MONEY = parseFloat(TOTAL_MONEY.toFixed(2));
-        SLOT_CASH = parseFloat(SLOT_CASH.toFixed(2));
     }
- 
     if(aPrizeList.length === 0){
         aPrizeList = [0];
-        iTotWin = 0;
     }
-
     var oData = {res:true,money:TOTAL_MONEY,bonus_win:iTotWin,prize_list:JSON.stringify(aPrizeList)};                
     oCallback.call(oCallbackOwner,oData);
 }
 
 function checkWin(bFreespin,iNumBettingLines){
-
-    //trace(_aFinalSymbols)
-    //CHECK IF THERE IS ANY COMBO
     var _aWinningLine = new Array();
-  
     for(var k=0;k<iNumBettingLines;k++){
         var aCombos = _aPaylineCombo[k];
-
         var aCellList = new Array();
         var iValue = _aFinalSymbols[aCombos[0]['row']][aCombos[0]['col']];
-
         var iNumEqualSymbol = 1;
         var iStartIndex = 1;
-
         aCellList.push({row:aCombos[0]['row'],col:aCombos[0]['col'],value:_aFinalSymbols[aCombos[0]['row']][aCombos[0]['col']]} );
-
         while(iValue === WILD_SYMBOL && iStartIndex<NUM_REELS){
             iNumEqualSymbol++;
             iValue = _aFinalSymbols[aCombos[iStartIndex]['row']][aCombos[iStartIndex]['col']];
-
             aCellList.push( {row: aCombos[iStartIndex]['row'] ,col:aCombos[iStartIndex]['col'] ,value:_aFinalSymbols[aCombos[iStartIndex]['row']][aCombos[iStartIndex]['col']]} );                                                    
             iStartIndex++;
         }
-
         for(var t=iStartIndex;t<aCombos.length;t++){
             if(_aFinalSymbols[aCombos[t]['row']][aCombos[t]['col']] === iValue || 
                                         _aFinalSymbols[aCombos[t]['row']][aCombos[t]['col']] === WILD_SYMBOL){
                 iNumEqualSymbol++;
-
-
                 aCellList.push({row:aCombos[t]['row'],col:aCombos[t]['col'],value:_aFinalSymbols[aCombos[t]['row']][aCombos[t]['col']]} );
             }else{
                 break;
             }
         }
-        
-        
         if(_aSymbolWin[iValue][iNumEqualSymbol-1] > 0 && !(bFreespin && iValue === FREESPIN_SYMBOL) && !(_bBonus && iValue === BONUS_SYMBOL) ){
             aCellList.sort(sortListByCol);
             _aWinningLine.push({line:k+1,amount:_aSymbolWin[iValue][iNumEqualSymbol-1],num_win:iNumEqualSymbol,value:iValue,list:aCellList});
         }
     }
-
     if(bFreespin){
         aCellList = new Array();
         for(var i=0;i<NUM_ROWS;i++){
@@ -273,10 +177,8 @@ function checkWin(bFreespin,iNumBettingLines){
                 }
             }
         }
-
         aCellList.sort(sortListByCol);
         _aWinningLine.push({line:0,amount:0,num_win:aCellList.length,value:FREESPIN_SYMBOL,list:aCellList});
-
     }else if(_bBonus){
         var aCellList = new Array();
         for(var i=0;i<NUM_ROWS;i++){
@@ -286,12 +188,9 @@ function checkWin(bFreespin,iNumBettingLines){
                 }
             }
         }
-
         aCellList.sort(sortListByCol);
         _aWinningLine.push({line:0,amount:0,num_win:aCellList.length,value:BONUS_SYMBOL,list:aCellList});
     }
-
-
     return _aWinningLine;
 }
     
@@ -307,19 +206,15 @@ function generateRandomSymbols(bFreespin){
             }while(iRandSymbol === BONUS_SYMBOL || iRandSymbol === FREESPIN_SYMBOL);
         }
     }
-
     if(bFreespin){
-        //DECIDE HOW NAMY FREESPIN SYMBOL MUST APPEAR( MINIMUM 3, MAX 5)
         var aTmp = new Array();
         for(i=0;i<_iFreespinSymbolNumOccur.length;i++){
             for(j=0;j<_iFreespinSymbolNumOccur[i];j++){
                 aTmp.push(i);
             }
         }
-
         var iRand =  Math.floor(Math.random()*aTmp.length);
         _iNumSymbolFreeSpin = 3 + aTmp[iRand];
-
         var aCurReel = [0,1,2,3,4];
         aCurReel = shuffle ( aCurReel );
         for(var k=0;k<_iNumSymbolFreeSpin;k++){
@@ -327,7 +222,6 @@ function generateRandomSymbols(bFreespin){
             _aFinalSymbols[iRandRow][aCurReel[k]] = FREESPIN_SYMBOL;
         }
     }else if(_bBonus){
-        //DECIDE WHERE BONUS SYMBOL MUST APPEAR.          
         aCurReel = [0,1,2,3,4];
         aCurReel = shuffle ( aCurReel );
         var iNumBonusSymbol = Math.floor(Math.random()*3+3);
@@ -344,11 +238,9 @@ function generLosingPattern(){
         do{
             var iRandIndex = Math.floor(Math.random()*(s_aRandSymbols.length)); 
         }while(s_aRandSymbols[iRandIndex] === BONUS_SYMBOL || s_aRandSymbols[iRandIndex] === FREESPIN_SYMBOL || s_aRandSymbols[iRandIndex] === WILD_SYMBOL);
-        
         var iRandSymbol = s_aRandSymbols[iRandIndex];
         aFirstCol[i] = iRandSymbol;  
     }
-    
     var iNumBonus = 0;
     var iNumFreeSpins = 0;
     _aFinalSymbols = new Array();
@@ -363,7 +255,6 @@ function generLosingPattern(){
                     iRandSymbol = s_aRandSymbols[iRandIndex];
                 }while(aFirstCol[0] === iRandSymbol || aFirstCol[1] === iRandSymbol || aFirstCol[2] === iRandSymbol ||
                         (iRandSymbol === BONUS_SYMBOL && iNumBonus===2) || (iRandSymbol === FREESPIN_SYMBOL && iNumFreeSpins === 2) ||  iRandSymbol === WILD_SYMBOL);
-                
                 _aFinalSymbols[i][j] = iRandSymbol;			
                 if(iRandSymbol === BONUS_SYMBOL){
                     iNumBonus++;
@@ -373,7 +264,6 @@ function generLosingPattern(){
             }  
         }
     }
-    
     return _aFinalSymbols;
 };
 
@@ -383,7 +273,7 @@ function refreshCredit(iCredit,oCallback, oCallbackOwner){
 };
 
 function formatEntries(iValue){
-    return Math.floor(iValue);
+    return Math.floor(iValue).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
 function _dieError( szReason,oCallback, oCallbackOwner){
@@ -392,21 +282,11 @@ function _dieError( szReason,oCallback, oCallbackOwner){
 }	
 
 function sortListByCol(a,b) {
-        if (a.col < b.col)
-           return -1;
-        if (a.col > b.col)
-          return 1;
+        if (a.col < b.col) return -1;
+        if (a.col > b.col) return 1;
         return 0;
-    };
+};
 
-//THIS FUNCTION INIT WIN FOR EACH SYMBOL COMBO
-//EXAMPLE: _aSymbolWin[0] = array(0,0,20,25,30) MEANS THAT
-//CHERRY SYMBOL GIVES THE FOLLOWING PRIZE FOR:
-//COMBO 1 : 0$
-//COMBO 2 : 0$
-//COMBO 3 : 20$
-//COMBO 4 : 25$
-//COMBO 5 : 30$
 function _initSymbolWin(){
     _aSymbolWin = new Array();
     for(var i=0;i<PAYTABLE_VALUES.length;i++){
@@ -415,19 +295,15 @@ function _initSymbolWin(){
              _aSymbolWin[i][j] = PAYTABLE_VALUES[i][j];
         }
     }
-
     for(var k=PAYTABLE_VALUES.length;k<NUM_SYMBOLS;k++){
         _aSymbolWin[k] = [0,0,0,0,0];
     }
 };
 
 function _setMinWin(){
-    
-    //FIND MIN WIN
     _iMinWin = 9999999999999;
     for(var i=0;i<_aSymbolWin.length;i++){
         var aTmp = _aSymbolWin[i];
-       
         for(var j=0;j<aTmp.length;j++){
             if(aTmp[j] !== 0 && aTmp[j] < _iMinWin){
                 _iMinWin = aTmp[j];
@@ -437,8 +313,6 @@ function _setMinWin(){
 }
 
 function _initPaylines(){
-    //STORE ALL INFO ABOUT PAYLINE COMBOS
-
     _aPaylineCombo[0] = [{row:1,col:0},{row:1,col:1},{row:1,col:2},{row:1,col:3},{row:1,col:4}];
     _aPaylineCombo[1] = [{row:0,col:0},{row:0,col:1},{row:0,col:2},{row:0,col:3},{row:0,col:4}];
     _aPaylineCombo[2] = [{row:2,col:0},{row:2,col:1},{row:2,col:2},{row:2,col:3},{row:2,col:4}];
@@ -459,15 +333,12 @@ function _initPaylines(){
     _aPaylineCombo[17] = [{row:0,col:0},{row:0,col:1},{row:2,col:2},{row:0,col:3},{row:0,col:4}];
     _aPaylineCombo[18] = [{row:2,col:0},{row:2,col:1},{row:0,col:2},{row:2,col:3},{row:2,col:4}];
     _aPaylineCombo[19] = [{row:0,col:0},{row:2,col:1},{row:2,col:2},{row:2,col:3},{row:0,col:4}];
-    
     return _aPaylineCombo;
 };
 
 function _init(){
     _initSymbolWin();
-
     _aPaylineCombo = _initPaylines();
     _setMinWin();
 }
-
 _init();
