@@ -1,3 +1,8 @@
+// Fungsi baru untuk memformat angka sebagai Rupiah
+function formatRupiah(number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
 function CInterface(iCurBet,iTotBet,oContainerSlot){
     var _bShowingLine;
     var _aLinesBut;
@@ -47,7 +52,7 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
         _oInfoBut.addEventListener(ON_MOUSE_UP, this._onInfo, this);
 
         _pStartPosCoin = {x:520,y:CANVAS_HEIGHT - oSprite.height/2 - 170};
-        _oBetCoinBut = new CSpriteSheetTextButton(_pStartPosCoin.x, _pStartPosCoin.y,oSprite,TEXT_COIN +" " + formatEntries(iCurBet),FONT_GAME_1,"#8d4402",34,oContainerSlot);      
+        _oBetCoinBut = new CSpriteSheetTextButton(_pStartPosCoin.x, _pStartPosCoin.y,oSprite,TEXT_COIN +" " + formatRupiah(iCurBet),FONT_GAME_1,"#8d4402",34,oContainerSlot);
         _oBetCoinBut.addEventListener(ON_MOUSE_UP, this._onBet, this);
         
         _pStartPosLines = {x:758,y:CANVAS_HEIGHT - oSprite.height/2 - 170};
@@ -68,7 +73,7 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
                     _pStartPosMoney.x, _pStartPosMoney.y, 278, 30, 	
                     30, "left", "#ffba00", FONT_GAME_1, 1,	
                     0, 0,	
-                    TEXT_MONEY +": " + formatEntries(TOTAL_MONEY)+TEXT_CURRENCY,	
+                    TEXT_MONEY +": " + TEXT_CURRENCY + formatRupiah(TOTAL_MONEY),
                     true, true, false,	
                     false );	
 
@@ -77,7 +82,7 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
                     776, _pStartPosMoney.y, 278, 30, 	
                     30, "left", "#ffba00", FONT_GAME_1, 1,	
                     0, 0,	
-                    TEXT_BET +": "+formatEntries(iTotBet)+TEXT_CURRENCY,	
+                    TEXT_BET +": "+ TEXT_CURRENCY + formatRupiah(iTotBet),
                     true, true, false,	
                     false );		
         	
@@ -85,7 +90,7 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
                     1086, _pStartPosMoney.y, 278, 30, 	
                     30, "left", "#ffba00", FONT_GAME_1, 1,	
                     0, 0,	
-                    TEXT_WIN + ": 0.00"+TEXT_CURRENCY,	
+                    TEXT_WIN + ": " + TEXT_CURRENCY + "0",
                     true, true, false,	
                     false );	
 
@@ -406,15 +411,15 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
     };
 
     this.refreshMoney = function(iMoney){	
-        _oMoneyText.refreshText(TEXT_MONEY +": " + formatEntries(iMoney) + TEXT_CURRENCY);	
+        _oMoneyText.refreshText(TEXT_MONEY +": " + TEXT_CURRENCY + formatRupiah(iMoney));
     };
     
     this.refreshBet = function(iBet){	
-        _oBetCoinBut.setText(TEXT_COIN +" " + formatEntries(iBet));	
+        _oBetCoinBut.setText(TEXT_COIN +" " + formatRupiah(iBet));
     };	
     	
     this.refreshTotalBet = function(iTotBet){	
-        _oTotalBetText.refreshText(TEXT_BET +": "+ formatEntries(iTotBet) +TEXT_CURRENCY);	
+        _oTotalBetText.refreshText(TEXT_BET +": "+ TEXT_CURRENCY + formatRupiah(iTotBet));
     };
     
     this.refreshNumLines = function(iLines){
@@ -440,11 +445,11 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
     };
     
     this.resetWin = function(){	
-        _oWinText.refreshText(TEXT_WIN+": "+ formatEntries(0) );	
+        _oWinText.refreshText(TEXT_WIN+": " + TEXT_CURRENCY + "0" );
     };	
     	
     this.refreshWinText = function(iWin){	
-        _oWinText.refreshText(TEXT_WIN + ": "+ formatEntries(iWin) );	
+        _oWinText.refreshText(TEXT_WIN + ": "+ TEXT_CURRENCY + formatRupiah(iWin) );
     };
     
     this.refreshFreeSpinNum = function(iNum){
@@ -463,7 +468,7 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
         if(iAmount === ""){
             _oFreeSpinWinText.refreshText(iAmount);	
         }else{
-            _oFreeSpinWinText.refreshText(formatEntries(iAmount));	
+            _oFreeSpinWinText.refreshText(TEXT_CURRENCY + formatRupiah(iAmount));
         }
     };	
     	
