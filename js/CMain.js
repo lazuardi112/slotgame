@@ -350,19 +350,9 @@ function CMain(oData){
     RESTART_CREDIT = oData.restart_credit;
     s_bAudioActive = oData.audio_enable_on_startup;
     TOTAL_MONEY = START_MONEY = oData.start_credit;
-
-    // Buat atau dapatkan ID pemain unik
-    let playerId = localStorage.getItem('slot_player_id');
-    if (!playerId) {
-        playerId = Math.random().toString(36).substring(2);
-        localStorage.setItem('slot_player_id', playerId);
-    }
-    s_sPlayerId = playerId;
             
     this.initContainer();
 }
-
-var s_sPlayerId;
 
 var s_bMobile;
 var s_bFullscreen = false;
