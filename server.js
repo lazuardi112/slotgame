@@ -75,7 +75,12 @@ app.post('/api/user', (req, res) => {
     return res.status(400).send('unique_id diperlukan');
   }
 
-  const query = 'INSERT OR IGNORE INTO users (unique_id, device_info) VALUES (?, ?)';
+  const query = `
+    INSERT INTO users (unique_id, device_info)
+    VALUES (?, ?)
+    ON CONFLICT(unique_id)
+    DO UPDATE SET device_info = excluded.device_info;
+  `;
   db.run(query, [unique_id, device_info], (err) => {
     if (err) {
       console.error('Kesalahan saat menyimpan pengguna:', err);
@@ -111,7 +116,11 @@ app.post('/api/spin', (req, res) => {
                     let target_rtp = rtpRow.value;
                     let current_rtp = (total_in > 0) ? (total_out / total_in) * 100 : 0;
 
-                    let win = current_rtp < target_rtp;
+                    let win = false;
+                    if (current_rtp < target_rtp) {
+                        win = Math.random() < 0.5; // 50% chance to win if below target RTP
+                    }
+
                     let win_lines = [];
                     let tot_win = 0;
                     let pattern;
