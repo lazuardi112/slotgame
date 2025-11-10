@@ -42,28 +42,28 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
         this._initPaylines(oContainerSlot);
 
         var oSprite = s_oSpriteLibrary.getSprite('but_text');
-        _pStartPosInfo = {x:272,y:CANVAS_HEIGHT - oSprite.height/2 - 170};
-        _oInfoBut = new CSpriteSheetTextButton(_pStartPosInfo.x,_pStartPosInfo.y,oSprite,TEXT_PAYTABLE,FONT_GAME_1,"#8d4402",34,oContainerSlot);        
-        _oInfoBut.addEventListener(ON_MOUSE_UP, this._onInfo, this);
-
-        _pStartPosCoin = {x:520,y:CANVAS_HEIGHT - oSprite.height/2 - 170};
-        _oBetCoinBut = new CSpriteSheetTextButton(_pStartPosCoin.x, _pStartPosCoin.y,oSprite,TEXT_COIN +" " + formatEntries(iCurBet),FONT_GAME_1,"#8d4402",34,oContainerSlot);      
-        _oBetCoinBut.addEventListener(ON_MOUSE_UP, this._onBet, this);
-        
-        _pStartPosLines = {x:758,y:CANVAS_HEIGHT - oSprite.height/2 - 170};
-        _oAddLineBut = new CSpriteSheetTextButton(_pStartPosLines.x,_pStartPosLines.y,oSprite,TEXT_LINES + " " + NUM_PAYLINES,FONT_GAME_1,"#8d4402",34,oContainerSlot);
-        _oAddLineBut.addEventListener(ON_MOUSE_UP, this._onAddLine, this);
-        
-        _pStartPosAutoSpin = {x:996 ,y:CANVAS_HEIGHT - oSprite.height/2 - 170};
-        _oAutoSpinBut = new CSpriteSheetTextButton(_pStartPosAutoSpin.x,_pStartPosAutoSpin.y,oSprite,TEXT_AUTO_SPIN,FONT_GAME_1,"#8d4402",34,oContainerSlot);
-        _oAutoSpinBut.addEventListener(ON_MOUSE_UP, this._onAutoSpin, this);
-        
-        _pStartPosSpin = {x:1234,y:CANVAS_HEIGHT - oSprite.height/2 -170};
+        _pStartPosSpin = {x: CANVAS_WIDTH / 2, y: CANVAS_HEIGHT - 100};
         _oSpinBut = new CSpriteSheetTextButton(_pStartPosSpin.x,_pStartPosSpin.y,oSprite,TEXT_SPIN,FONT_GAME_1,"#8d4402",34,oContainerSlot);
         _oSpinBut.addEventListener(ON_MOUSE_UP, this._onSpin, this);
 
+        _pStartPosCoin = {x: _pStartPosSpin.x - 250, y: _pStartPosSpin.y};
+        _oBetCoinBut = new CSpriteSheetTextButton(_pStartPosCoin.x, _pStartPosCoin.y,oSprite,TEXT_COIN +" " + formatEntries(iCurBet),FONT_GAME_1,"#8d4402",34,oContainerSlot);      
+        _oBetCoinBut.addEventListener(ON_MOUSE_UP, this._onBet, this);
+        
+        _pStartPosLines = {x: _pStartPosSpin.x + 250, y: _pStartPosSpin.y};
+        _oAddLineBut = new CSpriteSheetTextButton(_pStartPosLines.x,_pStartPosLines.y,oSprite,TEXT_LINES + " " + NUM_PAYLINES,FONT_GAME_1,"#8d4402",34,oContainerSlot);
+        _oAddLineBut.addEventListener(ON_MOUSE_UP, this._onAddLine, this);
+        
+        _pStartPosAutoSpin = {x: _pStartPosLines.x + 250, y: _pStartPosSpin.y};
+        _oAutoSpinBut = new CSpriteSheetTextButton(_pStartPosAutoSpin.x,_pStartPosAutoSpin.y,oSprite,TEXT_AUTO_SPIN,FONT_GAME_1,"#8d4402",34,oContainerSlot);
+        _oAutoSpinBut.addEventListener(ON_MOUSE_UP, this._onAutoSpin, this);
+        
+        _pStartPosInfo = {x:_pStartPosCoin.x - 250,y: _pStartPosSpin.y};
+        _oInfoBut = new CSpriteSheetTextButton(_pStartPosInfo.x,_pStartPosInfo.y,oSprite,TEXT_PAYTABLE,FONT_GAME_1,"#8d4402",34,oContainerSlot);
+        _oInfoBut.addEventListener(ON_MOUSE_UP, this._onInfo, this);
 
-        _pStartPosMoney = {x:148,y:CANVAS_HEIGHT - 290};
+
+        _pStartPosMoney = {x: 20, y: 20};
 	_oMoneyText = new CTLText(oContainerSlot, 	
                     _pStartPosMoney.x, _pStartPosMoney.y, 278, 30, 	
                     30, "left", "#ffba00", FONT_GAME_1, 1,	
@@ -74,7 +74,7 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
 
         
 	_oTotalBetText = new CTLText(oContainerSlot, 	
-                    776, _pStartPosMoney.y, 278, 30, 	
+                    _pStartPosMoney.x + 300, _pStartPosMoney.y, 278, 30,
                     30, "left", "#ffba00", FONT_GAME_1, 1,	
                     0, 0,	
                     TEXT_BET +": "+TEXT_CURRENCY + " " +formatEntries(iTotBet),
@@ -82,7 +82,7 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
                     false );		
         	
         _oWinText = new CTLText(oContainerSlot, 	
-                    1086, _pStartPosMoney.y, 278, 30, 	
+                    _pStartPosMoney.x + 600, _pStartPosMoney.y, 278, 30,
                     30, "left", "#ffba00", FONT_GAME_1, 1,	
                     0, 0,	
                     TEXT_WIN + ": " + TEXT_CURRENCY + " 0",
