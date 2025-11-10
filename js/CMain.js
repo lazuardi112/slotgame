@@ -237,9 +237,18 @@ function CMain(oData){
     
 
     this._onRemovePreloader = function(){
+        this.getDeviceId();
         APIgetSlotInfos(this.settingPhase,this);
     };
     
+    this.getDeviceId = function() {
+        let deviceId = localStorage.getItem('deviceId');
+        if (!deviceId) {
+            deviceId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+            localStorage.setItem('deviceId', deviceId);
+        }
+        s_sDeviceId = deviceId;
+    };
 
     this.settingPhase = function( oInfos){
         try{
@@ -254,10 +263,20 @@ function CMain(oData){
         
         _oPreloader.unload();
         
- 
-        COIN_BET = oInfos.bets;
-        START_BET = oInfos.start_bet;
-        MIN_BET  = oInfos.bets[0];
+        $.ajax({
+            url: `http://localhost:5001/user/${s_sDeviceId}`,
+            type: 'GET',
+            success: function(data) {
+                TOTAL_MONEY = data.credits;
+            },
+            error: function() {
+                TOTAL_MONEY = START_MONEY;
+            }
+        });
+
+        COIN_BET = [5000, 10000, 25000, 50000, 100000, 250000, 500000, 1000000];
+        START_BET = COIN_BET[0];
+        MIN_BET  = COIN_BET[0];
         MIN_REEL_LOOPS = _oData.min_reel_loop;
         REEL_DELAY = _oData.reel_delay;
         TIME_SHOW_WIN = _oData.time_show_win;
@@ -354,6 +373,19 @@ function CMain(oData){
     this.initContainer();
 }
 
+function saveCredits() {
+    $.ajax({
+        url: `http://localhost:5001/user/${s_sDeviceId}/credits`,
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ credits: TOTAL_MONEY }),
+        error: function() {
+            console.error('Failed to save credits');
+        }
+    });
+}
+
+var s_sDeviceId;
 var s_bMobile;
 var s_bFullscreen = false;
 var s_iCntTime = 0;

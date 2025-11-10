@@ -3,23 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Admin Dashboard - Ancient Greek Theme</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background-color: #f0e6d2;
+            color: #3a2e1d;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #3a2e1d;
+            color: #f0e6d2;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            margin: 0;
+        }
+        .container {
+            padding: 20px;
+        }
+    </style>
 </head>
 <body>
-    <div class="login-container">
-        <h1>Admin Login</h1>
-        <form action="/login" method="POST">
-            <div class="input-group">
-                <label for="username">Nama Pengguna</label>
-                <input type="text" id="username" name="username" required>
-            </div>
-            <div class="input-group">
-                <label for="password">Kata Sandi</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <button type="submit">Masuk</button>
-        </form>
+    <header>
+        <h1>Admin Dashboard</h1>
+    </header>
+    <div class="container">
+        <h2>Welcome, Administrator!</h2>
+        <p>This is a placeholder for the admin dashboard with a modern, ancient Greek theme.</p>
     </div>
 </body>
 </html>
