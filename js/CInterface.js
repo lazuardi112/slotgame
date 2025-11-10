@@ -619,6 +619,18 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
 		_fRequestFullScreen.call(window.document.documentElement);	
 	}	
 		
+        if (s_bMobile) {
+            if (s_bFullscreen) {
+                if (screen.orientation && screen.orientation.unlock) {
+                    screen.orientation.unlock();
+                }
+            } else {
+                if (screen.orientation && screen.orientation.lock) {
+                    screen.orientation.lock('landscape-primary').catch(function(){});
+                }
+            }
+        }
+
 	sizeHandler();	
     };	
     	

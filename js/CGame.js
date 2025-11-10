@@ -446,6 +446,7 @@ function CGame(){
         _oInterface.refreshMoney(_iMoney);
         
         saveItem(LOCALSTORAGE_STRING+"score",_iMoney);
+        saveCredits();
     };
     
     this._showBigWin = function(){

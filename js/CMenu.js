@@ -1,23 +1,23 @@
 function CMenu(){
     var _pStartPosAudio;
     var _pStartPosFullscreen;
-    var _pStartPosCredits;
-    var _pStartPosDelete;
     
     var _fRequestFullScreen = null;
     var _fCancelFullScreen = null;
     var _oBg;
     var _oButPlay;
-    var _oButDeleteSavings;
     var _oAudioToggle;
-    var _oButCredits;
     var _oButFullscreen;
     var _oFade;
-    var _oAreYouSurePanel;
     
+    var _oButWithdraw;
+    var _oButHistory;
+    var _oButDeposit;
+
     this._init = function(){
         _oBg = createBitmap(s_oSpriteLibrary.getSprite('bg_menu'));
         s_oAttachSection.addChild(_oBg);
+        _oBg.alpha = 0.01;
 
         var oSpriteLogo = s_oSpriteLibrary.getSprite("logo_menu");
         var oLogo = createBitmap(oSpriteLogo);
@@ -41,16 +41,7 @@ function CMenu(){
             _oAudioToggle.addEventListener(ON_MOUSE_UP, this._onAudioToggle, this);
         }
         
-        if(SHOW_CREDITS){
-            var oSprite = s_oSpriteLibrary.getSprite('but_credits');
-            _pStartPosCredits = {x:(oSprite.width/2) + 4,y:(oSprite.height/2) + 4};
-            _oButCredits = new CGfxButton(_pStartPosCredits.x,_pStartPosCredits.y,oSprite,s_oAttachSection);
-            _oButCredits.addEventListener(ON_MOUSE_UP, this._onButCreditsRelease, this);
-
-            _pStartPosFullscreen = {x: _pStartPosCredits.x + oSprite.width + 4,y:_pStartPosCredits.y};
-        }else{
-             _pStartPosFullscreen = {x:(oSprite.width/2) + 4,y:(oSprite.height/2) + 4};
-        }
+        _pStartPosFullscreen = {x:(oSprite.width/2) + 4,y:(oSprite.height/2) + 4};
         
         var doc = window.document;
         var docEl = doc.documentElement;
@@ -68,23 +59,18 @@ function CMenu(){
             _oButFullscreen.addEventListener(ON_MOUSE_UP, this._onFullscreenRelease, this);
         }
         
-        var oSprite = s_oSpriteLibrary.getSprite("but_delete_savings")
-        _pStartPosDelete = {x:oSprite.width/2 +4,y:CANVAS_HEIGHT-oSprite.height/2-4};
-        _oButDeleteSavings = new CGfxButton(_pStartPosDelete.x,_pStartPosDelete.y,oSprite,s_oAttachSection);
-        _oButDeleteSavings.addEventListener(ON_MOUSE_UP,this._onDeleteSavings,this);
+        var oSprite = s_oSpriteLibrary.getSprite('but_play');
+        _oButWithdraw = new CGfxButton(CANVAS_WIDTH/2 - 200, CANVAS_HEIGHT - 100, oSprite, s_oAttachSection);
+        _oButWithdraw.addEventListener(ON_MOUSE_UP, this._onWithdraw, this);
+        _oButWithdraw.changeText("Tarik Credit");
 
+        _oButHistory = new CGfxButton(CANVAS_WIDTH/2, CANVAS_HEIGHT - 100, oSprite, s_oAttachSection);
+        _oButHistory.addEventListener(ON_MOUSE_UP, this._onHistory, this);
+        _oButHistory.changeText("Riwayat Credit");
 
-        if(!s_bStorageAvailable){
-            s_oMsgBox.show(TEXT_ERR_LS);
-            _oButDeleteSavings.setVisible(false);
-        }else if(!RESTART_CREDIT && getItem(LOCALSTORAGE_STRING+"score")){
-            TOTAL_MONEY = parseFloat(getItem(LOCALSTORAGE_STRING+"score"));
-        }else{
-            _oButDeleteSavings.setVisible(false);
-        }
-        
-        _oAreYouSurePanel = new CAreYouSurePanel();
-        _oAreYouSurePanel.addEventListener(ON_BUT_YES_DOWN,this._onExitYes,this);
+        _oButDeposit = new CGfxButton(CANVAS_WIDTH/2 + 200, CANVAS_HEIGHT - 100, oSprite, s_oAttachSection);
+        _oButDeposit.addEventListener(ON_MOUSE_UP, this._onDeposit, this);
+        _oButDeposit.changeText("Deposit Credit");
 
         _oFade = new createjs.Shape();
         _oFade.graphics.beginFill("black").drawRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT);
@@ -103,15 +89,15 @@ function CMenu(){
         _oButPlay.unload(); 
         _oButPlay = null;
         
-        _oButDeleteSavings.unload();
+        _oButWithdraw.unload();
+        _oButHistory.unload();
+        _oButDeposit.unload();
 
         if(DISABLE_SOUND_MOBILE === false || s_bMobile === false){
             _oAudioToggle.unload();
             _oAudioToggle = null;
         }
-        if(SHOW_CREDITS){
-            _oButCredits.unload();
-        }
+
         if (_fRequestFullScreen && screenfull.isEnabled){
             _oButFullscreen.unload();
         }
@@ -128,14 +114,9 @@ function CMenu(){
         if(DISABLE_SOUND_MOBILE === false || s_bMobile === false){
             _oAudioToggle.setPosition(_pStartPosAudio.x - s_iOffsetX,s_iOffsetY + _pStartPosAudio.y);
         }
-        if(SHOW_CREDITS){
-            _oButCredits.setPosition(_pStartPosCredits.x + s_iOffsetX,_pStartPosCredits.y + s_iOffsetY);
-        }
         if (_fRequestFullScreen && screenfull.isEnabled){
             _oButFullscreen.setPosition(_pStartPosFullscreen.x + s_iOffsetX,_pStartPosFullscreen.y + s_iOffsetY);
         }
-
-        _oButDeleteSavings.setPosition(_pStartPosDelete.x + s_iOffsetX,_pStartPosDelete.y-s_iOffsetY)
     };
     
     this._onButPlayRelease = function(){
@@ -149,8 +130,19 @@ function CMenu(){
         s_bAudioActive = !s_bAudioActive;
     };
     
-    this._onButCreditsRelease = function(){
-        new CCreditsPanel();
+    this._onWithdraw = function(){
+        console.log("Withdraw button clicked");
+        // Add withdraw logic here
+    };
+
+    this._onHistory = function(){
+        console.log("History button clicked");
+        // Add history logic here
+    };
+
+    this._onDeposit = function(){
+        console.log("Deposit button clicked");
+        // Add deposit logic here
     };
 
     this.resetFullscreenBut = function(){
@@ -167,15 +159,6 @@ function CMenu(){
 	}
 	
 	sizeHandler();
-    };
-    
-    this._onDeleteSavings = function(){
-        _oAreYouSurePanel.show(TEXT_DELETE_SAVINGS+": "+START_MONEY+TEXT_CURRENCY+"\n"+TEXT_ARE_SURE);
-    };
-
-    this._onExitYes = function(){
-        clearLocalStorage();
-        _oButDeleteSavings.setVisible(false);
     };
 
     s_oMenu = this;
