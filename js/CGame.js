@@ -84,11 +84,6 @@ function CGame(){
 
         s_oTweenController = new CTweenController();
         
-        _oBg = createBitmap(s_oSpriteLibrary.getSprite('bg_game'));
-        _oBg.scaleX = CANVAS_WIDTH / _oBg.getBounds().width;
-        _oBg.scaleY = CANVAS_HEIGHT / _oBg.getBounds().height;
-        s_oAttachSection.addChild(_oBg);
-        
         _oBgFreespin = createBitmap(s_oSpriteLibrary.getSprite("bg_freespins_off"));
         _oBgFreespin.alpha = 0;
         s_oAttachSection.addChild(_oBgFreespin);

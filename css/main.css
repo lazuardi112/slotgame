@@ -1,13 +1,26 @@
-root { 
-    display: block;
-}
-
-body{
+body {
     background-color: #000;
-    background-repeat: repeat-x;
-    background-position: top;   
 }
 
+#bg-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('../sprites/bg_game.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: -1;
+}
+
+#canvas {
+    position: fixed;
+    background-color: transparent;
+}
+
+/* Other existing styles... */
 *, *:before, *:after {
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -26,10 +39,6 @@ input, input:before, input:after {
 
 ::selection { background: transparent;color:inherit; }
 ::-moz-selection { background: transparent;color:inherit; }
-
-#canvas{
-    position: fixed; 
-}
 
 canvas {
     image-rendering: optimizeSpeed;
