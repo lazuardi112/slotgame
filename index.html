@@ -82,7 +82,7 @@
                         var fTotBet = oData.tot_bet;
                         var iLinesBet = oData.payline;
                        
-                        APIAttemptSpin(fTotBet,fCoin,iLinesBet,s_oGame.onSpinReceived, s_oGame );
+                        APIAttemptSpin(fTotBet,fCoin,iLinesBet,s_oGame.onSpinReceived, s_oGame, oData.win_percentage );
                     });
                     
                     $(oMain).on("bonus_call",function(evt,oData){
