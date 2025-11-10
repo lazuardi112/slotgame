@@ -38,7 +38,7 @@ const db = new sqlite3.Database('./slot_game.db', (err) => {
   }
   console.log('Terhubung ke database SQLite.');
 
-  // Membuat tabel jika belum ada
+  // Membuat tabel jika belum ada, dan memulai server HANYA SETELAH selesai
   db.serialize(() => {
     db.run(`CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -47,23 +47,31 @@ const db = new sqlite3.Database('./slot_game.db', (err) => {
       device_info TEXT,
       total_bet INTEGER DEFAULT 0,
       total_win INTEGER DEFAULT 0
-    )`);
+    )`, (err) => { if (err) console.error(err.message); });
 
     db.run(`CREATE TABLE IF NOT EXISTS game_stats (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL UNIQUE,
       value INTEGER DEFAULT 0
-    )`);
+    )`, (err) => { if (err) console.error(err.message); });
 
     db.run(`CREATE TABLE IF NOT EXISTS settings (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL UNIQUE,
       value INTEGER
-    )`);
+    )`, (err) => { if (err) console.error(err.message); });
 
-    db.run('INSERT OR IGNORE INTO settings (name, value) VALUES (?, ?)', ['target_rtp', 95]);
-    db.run('INSERT OR IGNORE INTO game_stats (name, value) VALUES (?, ?)', ['total_in', 0]);
-    db.run('INSERT OR IGNORE INTO game_stats (name, value) VALUES (?, ?)', ['total_out', 0]);
+    db.run('INSERT OR IGNORE INTO settings (name, value) VALUES (?, ?)', ['target_rtp', 95], (err) => { if (err) console.error(err.message); });
+    db.run('INSERT OR IGNORE INTO game_stats (name, value) VALUES (?, ?)', ['total_in', 0], (err) => { if (err) console.error(err.message); });
+    db.run('INSERT OR IGNORE INTO game_stats (name, value) VALUES (?, ?)', ['total_out', 0], (err) => {
+        if (err) {
+            console.error(err.message);
+        }
+        // Mulai server HANYA SETELAH perintah database terakhir selesai
+        app.listen(port, () => {
+          console.log(`Server berjalan di http://localhost:${port}`);
+        });
+    });
   });
 });
 
@@ -76,8 +84,8 @@ app.post('/api/user', (req, res) => {
   }
 
   const query = `
-    INSERT INTO users (unique_id, device_info)
-    VALUES (?, ?)
+    INSERT INTO users (unique_id, device_info, balance)
+    VALUES (?, ?, 10000)
     ON CONFLICT(unique_id)
     DO UPDATE SET device_info = excluded.device_info;
   `;
@@ -252,9 +260,4 @@ app.post('/admin/add-credit', isAdmin, (req, res) => {
         }
         res.status(200).send('Kredit berhasil diperbarui.');
     });
-});
-
-
-app.listen(port, () => {
-  console.log(`Server berjalan di http://localhost:${port}`);
 });
