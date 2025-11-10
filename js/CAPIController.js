@@ -21,3 +21,7 @@ function APIAttemptSpin(iCurBet, iCoin, iNumBettingLines, oCallback, oCallbackOw
             // Handle error
         });
 }
+
+function formatEntries(iValue){
+    return Math.floor(iValue).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
