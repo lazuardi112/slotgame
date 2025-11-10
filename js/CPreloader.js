@@ -38,10 +38,6 @@ function CPreloader() {
 
     this.attachSprites = function () {
         
-        var oBg = new createjs.Shape();
-        oBg.graphics.beginFill("black").drawRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-        _oContainer.addChild(oBg);
-
         var oSprite = s_oSpriteLibrary.getSprite('200x200');
         _oIcon = createBitmap(oSprite);
         _oIcon.regX = oSprite.width * 0.5;
