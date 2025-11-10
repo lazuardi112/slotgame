@@ -37,34 +37,34 @@ const db = new sqlite3.Database('./slot_game.db', (err) => {
     console.error(err.message);
   }
   console.log('Terhubung ke database SQLite.');
-});
 
-// Membuat tabel jika belum ada
-db.serialize(() => {
-  db.run(`CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    unique_id TEXT NOT NULL UNIQUE,
-    balance INTEGER DEFAULT 10000,
-    device_info TEXT,
-    total_bet INTEGER DEFAULT 0,
-    total_win INTEGER DEFAULT 0
-  )`);
+  // Membuat tabel jika belum ada
+  db.serialize(() => {
+    db.run(`CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      unique_id TEXT NOT NULL UNIQUE,
+      balance INTEGER DEFAULT 10000,
+      device_info TEXT,
+      total_bet INTEGER DEFAULT 0,
+      total_win INTEGER DEFAULT 0
+    )`);
 
-  db.run(`CREATE TABLE IF NOT EXISTS game_stats (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL UNIQUE,
-    value INTEGER DEFAULT 0
-  )`);
+    db.run(`CREATE TABLE IF NOT EXISTS game_stats (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL UNIQUE,
+      value INTEGER DEFAULT 0
+    )`);
 
-  db.run(`CREATE TABLE IF NOT EXISTS settings (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL UNIQUE,
-    value INTEGER
-  )`);
+    db.run(`CREATE TABLE IF NOT EXISTS settings (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL UNIQUE,
+      value INTEGER
+    )`);
 
-  db.run('INSERT OR IGNORE INTO settings (name, value) VALUES (?, ?)', ['target_rtp', 95]);
-  db.run('INSERT OR IGNORE INTO game_stats (name, value) VALUES (?, ?)', ['total_in', 0]);
-  db.run('INSERT OR IGNORE INTO game_stats (name, value) VALUES (?, ?)', ['total_out', 0]);
+    db.run('INSERT OR IGNORE INTO settings (name, value) VALUES (?, ?)', ['target_rtp', 95]);
+    db.run('INSERT OR IGNORE INTO game_stats (name, value) VALUES (?, ?)', ['total_in', 0]);
+    db.run('INSERT OR IGNORE INTO game_stats (name, value) VALUES (?, ?)', ['total_out', 0]);
+  });
 });
 
 

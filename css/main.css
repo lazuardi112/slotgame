@@ -4,8 +4,11 @@ root {
 
 body{
     background-color: #000;
-    background-repeat: repeat-x;
-    background-position: top;
+    background-image: url(../sprites/bg_game.jpg);
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+    background-size: cover;
 }
 
 *, *:before, *:after {

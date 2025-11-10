@@ -68,7 +68,7 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
                     _pStartPosMoney.x, _pStartPosMoney.y, 278, 30,
                     30, "left", "#ffba00", FONT_GAME_1, 1,
                     0, 0,
-                    TEXT_MONEY +": " + formatEntries(TOTAL_MONEY)+TEXT_CURRENCY,
+                    TEXT_MONEY +": " + TEXT_CURRENCY + " " + formatEntries(TOTAL_MONEY),
                     true, true, false,
                     false );
 
@@ -77,7 +77,7 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
                     776, _pStartPosMoney.y, 278, 30,
                     30, "left", "#ffba00", FONT_GAME_1, 1,
                     0, 0,
-                    TEXT_BET +": "+formatEntries(iTotBet)+TEXT_CURRENCY,
+                    TEXT_BET +": "+TEXT_CURRENCY + " " +formatEntries(iTotBet),
                     true, true, false,
                     false );
 
@@ -85,7 +85,7 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
                     1086, _pStartPosMoney.y, 278, 30,
                     30, "left", "#ffba00", FONT_GAME_1, 1,
                     0, 0,
-                    TEXT_WIN + ": 0.00"+TEXT_CURRENCY,
+                    TEXT_WIN + ": " + TEXT_CURRENCY + " 0",
                     true, true, false,
                     false );
 
@@ -154,7 +154,7 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
 
         var doc = window.document;	
         var docEl = doc.documentElement;	
-        _fRequestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+        _fRequestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullScreen;
         _fCancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
 
         if(ENABLE_FULLSCREEN === false){
@@ -190,19 +190,19 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
         return false;
     };
 
-   this.refreshButtonPos = function(){
-        if( (_pStartPosSpin.x - s_iOffsetX )> CANVAS_WIDTH - 210){
-            _oSpinBut.setPosition(_pStartPosSpin.x - s_iOffsetX,_pStartPosSpin.y - s_iOffsetY);
+   this.refreshButtonPos = function(iNewX,iNewY){
+        if( (_pStartPosSpin.x - iNewX )> CANVAS_WIDTH - 210){
+            _oSpinBut.setPosition(_pStartPosSpin.x - iNewX,_pStartPosSpin.y - iNewY);
         }
 
         if(DISABLE_SOUND_MOBILE === false || s_bMobile === false){	
-            _oAudioToggle.setPosition(_pStartPosAudio.x + s_iOffsetX,s_iOffsetY + _pStartPosAudio.y);
+            _oAudioToggle.setPosition(_pStartPosAudio.x + iNewX,iNewY + _pStartPosAudio.y);
         }	
         if (_fRequestFullScreen && screenfull.isEnabled){	
-            _oButFullscreen.setPosition(_pStartPosFullscreen.x + s_iOffsetX,_pStartPosFullscreen.y + s_iOffsetY);
+            _oButFullscreen.setPosition(_pStartPosFullscreen.x + iNewX,_pStartPosFullscreen.y + iNewY);
         }	
 
-        _oButExit.setPosition(_pStartPosExit.x-s_iOffsetX,_pStartPosExit.y + s_iOffsetY);
+        _oButExit.setPosition(_pStartPosExit.x-iNewX,_pStartPosExit.y + iNewY);
     };      
     
     this.unload = function(){
@@ -406,7 +406,7 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
     };
 
     this.refreshMoney = function(iMoney){
-        _oMoneyText.refreshText(TEXT_MONEY +": " + formatEntries(iMoney) + TEXT_CURRENCY);
+        _oMoneyText.refreshText(TEXT_MONEY +": " + TEXT_CURRENCY + " " + formatEntries(iMoney));
     };
 
     this.refreshBet = function(iBet){
@@ -414,7 +414,7 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
     };
 
     this.refreshTotalBet = function(iTotBet){
-        _oTotalBetText.refreshText(TEXT_BET +": "+ formatEntries(iTotBet) +TEXT_CURRENCY);
+        _oTotalBetText.refreshText(TEXT_BET +": "+ TEXT_CURRENCY + " " + formatEntries(iTotBet));
     };
 
     this.refreshNumLines = function(iLines){
@@ -440,11 +440,11 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
     };
 
     this.resetWin = function(){
-        _oWinText.refreshText(TEXT_WIN+": "+ formatEntries(0) );
+        _oWinText.refreshText(TEXT_WIN+": "+ TEXT_CURRENCY + " "+ formatEntries(0) );
     };
 
     this.refreshWinText = function(iWin){
-        _oWinText.refreshText(TEXT_WIN + ": "+ formatEntries(iWin) );
+        _oWinText.refreshText(TEXT_WIN + ": "+ TEXT_CURRENCY + " " + formatEntries(iWin) );
     };
 
     this.refreshFreeSpinNum = function(iNum){
