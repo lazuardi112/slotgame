@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header>
+            <h1>Admin Dashboard</h1>
+            <nav>
+                <ul>
+                    <li><a href="#player-data">Data Pemain</a></li>
+                    <li><a href="#rtp-settings">Pengaturan RTP</a></li>
+                    <li><a href="#midtrans-settings">Pengaturan Midtrans</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main>
+            <section id="player-data">
+                <h2>Data Pemain</h2>
+                <div id="player-table-container"></div>
+            </section>
+            <section id="rtp-settings">
+                <h2>Pengaturan RTP</h2>
+                <div class="rtp-group">
+                    <label for="global-rtp">RTP Global: <span id="global-rtp-value">95</span>%</label>
+                    <input type="range" id="global-rtp" min="1" max="100" value="95">
+                </div>
+                <div id="user-rtp-container"></div>
+                <button id="save-rtp">Simpan Pengaturan RTP</button>
+            </section>
+            <section id="midtrans-settings">
+                <h2>Pengaturan Midtrans</h2>
+                <form id="midtrans-config-form">
+                    <div class="input-group">
+                        <label for="server-key">Kunci Server</label>
+                        <input type="text" id="server-key" name="server_key" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="is-production">Mode Produksi</label>
+                        <input type="checkbox" id="is-production" name="is_production">
+                    </div>
+                    <div class="input-group">
+                        <label for="notification-url">URL Notifikasi</label>
+                        <input type="text" id="notification-url" name="notification_url">
+                    </div>
+                    <button type="submit">Simpan Pengaturan Midtrans</button>
+                </form>
+            </section>
+        </main>
+    </div>
+    <script src="dashboard.js"></script>
+</body>
+</html>
