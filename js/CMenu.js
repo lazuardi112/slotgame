@@ -2,18 +2,15 @@ function CMenu(){
     var _pStartPosAudio;
     var _pStartPosFullscreen;
     var _pStartPosCredits;
-    var _pStartPosDelete;
     
     var _fRequestFullScreen = null;
     var _fCancelFullScreen = null;
     var _oBg;
     var _oButPlay;
-    var _oButDeleteSavings;
     var _oAudioToggle;
     var _oButCredits;
     var _oButFullscreen;
     var _oFade;
-    var _oAreYouSurePanel;
     
     this._init = function(){
         _oBg = createBitmap(s_oSpriteLibrary.getSprite('bg_menu'));
@@ -54,7 +51,7 @@ function CMenu(){
         
         var doc = window.document;
         var docEl = doc.documentElement;
-        _fRequestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+        _fRequestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullScreen;
         _fCancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
         
         if(ENABLE_FULLSCREEN === false){
@@ -68,24 +65,6 @@ function CMenu(){
             _oButFullscreen.addEventListener(ON_MOUSE_UP, this._onFullscreenRelease, this);
         }
         
-        var oSprite = s_oSpriteLibrary.getSprite("but_delete_savings")
-        _pStartPosDelete = {x:oSprite.width/2 +4,y:CANVAS_HEIGHT-oSprite.height/2-4};
-        _oButDeleteSavings = new CGfxButton(_pStartPosDelete.x,_pStartPosDelete.y,oSprite,s_oAttachSection);
-        _oButDeleteSavings.addEventListener(ON_MOUSE_UP,this._onDeleteSavings,this);
-
-
-        if(!s_bStorageAvailable){
-            s_oMsgBox.show(TEXT_ERR_LS);
-            _oButDeleteSavings.setVisible(false);
-        }else if(!RESTART_CREDIT && getItem(LOCALSTORAGE_STRING+"score")){
-            TOTAL_MONEY = parseFloat(getItem(LOCALSTORAGE_STRING+"score"));
-        }else{
-            _oButDeleteSavings.setVisible(false);
-        }
-        
-        _oAreYouSurePanel = new CAreYouSurePanel();
-        _oAreYouSurePanel.addEventListener(ON_BUT_YES_DOWN,this._onExitYes,this);
-
         _oFade = new createjs.Shape();
         _oFade.graphics.beginFill("black").drawRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT);
         
@@ -103,8 +82,6 @@ function CMenu(){
         _oButPlay.unload(); 
         _oButPlay = null;
         
-        _oButDeleteSavings.unload();
-
         if(DISABLE_SOUND_MOBILE === false || s_bMobile === false){
             _oAudioToggle.unload();
             _oAudioToggle = null;
@@ -134,8 +111,6 @@ function CMenu(){
         if (_fRequestFullScreen && screenfull.isEnabled){
             _oButFullscreen.setPosition(_pStartPosFullscreen.x + s_iOffsetX,_pStartPosFullscreen.y + s_iOffsetY);
         }
-
-        _oButDeleteSavings.setPosition(_pStartPosDelete.x + s_iOffsetX,_pStartPosDelete.y-s_iOffsetY)
     };
     
     this._onButPlayRelease = function(){
@@ -169,15 +144,6 @@ function CMenu(){
 	sizeHandler();
     };
     
-    this._onDeleteSavings = function(){
-        _oAreYouSurePanel.show(TEXT_DELETE_SAVINGS+": "+START_MONEY+TEXT_CURRENCY+"\n"+TEXT_ARE_SURE);
-    };
-
-    this._onExitYes = function(){
-        clearLocalStorage();
-        _oButDeleteSavings.setVisible(false);
-    };
-
     s_oMenu = this;
     
     this._init();
