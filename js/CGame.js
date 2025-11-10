@@ -150,10 +150,6 @@ function CGame(){
         playSound("ambience_game",1,true);
         
         _bUpdate = true;
-        
-        if(_iMoney < _iTotBet){
-             var oRechargePanel = new CRechargePanel();
-        }
     };
 
     this.unload = function(){
@@ -792,7 +788,6 @@ function CGame(){
         
         if(_iMoney < _iTotBet && _iTotFreeSpin === 0){
             this.resetAutoSpin();
-            var oRechargePanel = new CRechargePanel();
             return;
         }
         

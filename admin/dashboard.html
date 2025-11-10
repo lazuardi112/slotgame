@@ -2,89 +2,122 @@
 <html>
 <head>
   <title>Dasbor Admin</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Dasbor Admin</h1>
+  <div class="container">
+    <h1>Dasbor Admin</h1>
 
-  <h2>Pengaturan Global</h2>
-  <div>
-    <label for="global-win-percentage">Persentase Kemenangan Global (1-100):</label>
-    <input type="number" id="global-win-percentage" min="1" max="100">
-    <button onclick="updateGlobalWinPercentage()">Perbarui Global</button>
+    <div class="card">
+      <h2>Statistik Game</h2>
+      <div class="stats-container">
+        <div>
+          <h3>Total Uang Masuk</h3>
+          <p id="total-in">Rp 0</p>
+        </div>
+        <div>
+          <h3>Total Uang Keluar</h3>
+          <p id="total-out">Rp 0</p>
+        </div>
+        <div>
+          <h3>Keuntungan</h3>
+          <p id="profit">Rp 0</p>
+        </div>
+        <div>
+          <h3>RTP Aktual</h3>
+          <p id="actual-rtp">0%</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Pengaturan Global</h2>
+      <div>
+        <label for="target-rtp">Target RTP (%):</label>
+        <input type="number" id="target-rtp" min="1" max="100">
+        <button onclick="updateRTP()">Perbarui RTP</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Daftar Pemain</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID Unik</th>
+            <th>Saldo</th>
+            <th>Total Taruhan</th>
+            <th>Total Kemenangan</th>
+            <th>RTP Individu</th>
+            <th>Tambah Kredit</th>
+          </tr>
+        </thead>
+        <tbody id="players-table-body">
+          <!-- Data pemain akan dimasukkan di sini -->
+        </tbody>
+      </table>
+    </div>
   </div>
 
-  <hr>
-
-  <h2>Daftar Pemain</h2>
-  <table id="players-table">
-    <thead>
-      <tr>
-        <th>ID Unik</th>
-        <th>Persentase Kemenangan Kustom (1-100)</th>
-        <th>Tambah Kredit</th>
-        <th>Aksi</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Data pemain akan dimasukkan di sini -->
-    </tbody>
-  </table>
-
   <script>
-    // Memuat persentase kemenangan global saat halaman dimuat
-    fetch('/admin/settings/global-win-percentage')
+    function formatRupiah(number) {
+        return 'Rp ' + number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    // Memuat statistik dan pengaturan saat halaman dimuat
+    fetch('/admin/stats')
+      .then(response => response.json())
+      .then(stats => {
+        const totalIn = stats.total_in || 0;
+        const totalOut = stats.total_out || 0;
+        const profit = totalIn - totalOut;
+        const actualRtp = totalIn > 0 ? ((totalOut / totalIn) * 100).toFixed(2) : 0;
+
+        document.getElementById('total-in').textContent = formatRupiah(totalIn);
+        document.getElementById('total-out').textContent = formatRupiah(totalOut);
+        document.getElementById('profit').textContent = formatRupiah(profit);
+        document.getElementById('actual-rtp').textContent = actualRtp + '%';
+      });
+
+    fetch('/admin/settings/rtp')
       .then(response => response.json())
       .then(setting => {
-        document.getElementById('global-win-percentage').value = setting.value;
+        document.getElementById('target-rtp').value = setting.value;
       });
 
     // Memuat data pemain
     fetch('/admin/players')
       .then(response => response.json())
       .then(players => {
-        const tableBody = document.querySelector('#players-table tbody');
+        const tableBody = document.getElementById('players-table-body');
         players.forEach(player => {
+          const totalBet = player.total_bet || 0;
+          const totalWin = player.total_win || 0;
+          const playerRtp = totalBet > 0 ? ((totalWin / totalBet) * 100).toFixed(2) : 0;
+
           const row = document.createElement('tr');
           row.innerHTML = `
             <td>${player.unique_id}</td>
-            <td><input type="number" value="${player.win_percentage || ''}" min="1" max="100" placeholder="Gunakan Global"></td>
-            <td><input type="number" placeholder="Jumlah Kredit"><button onclick="addCredit('${player.unique_id}', this)">Tambah</button></td>
-            <td><button onclick="updateWinPercentage('${player.unique_id}', this)">Perbarui</button></td>
+            <td>${formatRupiah(player.balance)}</td>
+            <td>${formatRupiah(totalBet)}</td>
+            <td>${formatRupiah(totalWin)}</td>
+            <td>${playerRtp}%</td>
+            <td>
+              <input type="number" placeholder="Jumlah">
+              <button onclick="addCredit('${player.unique_id}', this)">Tambah</button>
+            </td>
           `;
           tableBody.appendChild(row);
         });
       });
 
-    function updateGlobalWinPercentage() {
-      const input = document.getElementById('global-win-percentage');
-      const value = parseInt(input.value);
-      if (value < 1 || value > 100) {
-        alert('Silakan masukkan nilai antara 1 dan 100.');
-        return;
-      }
-      fetch('/admin/settings/global-win-percentage', {
+    function updateRTP() {
+      const value = document.getElementById('target-rtp').value;
+      fetch('/admin/settings/rtp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ value })
-      }).then(() => alert('Persentase kemenangan global diperbarui!'));
-    }
-
-    function updateWinPercentage(uniqueId, button) {
-      const input = button.closest('tr').querySelector('input[type="number"]');
-      const winPercentage = input.value;
-      if (winPercentage !== '' && (winPercentage < 1 || winPercentage > 100)) {
-        alert('Silakan masukkan nilai antara 1 dan 100, atau biarkan kosong.');
-        return;
-      }
-
-      fetch('/admin/players/win-percentage', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          unique_id: uniqueId,
-          win_percentage: winPercentage === '' ? null : winPercentage
-        })
-      }).then(() => alert(`Persentase kemenangan untuk ${uniqueId} diperbarui!`));
+      }).then(() => alert('Target RTP diperbarui!'));
     }
 
     function addCredit(uniqueId, button) {
@@ -104,7 +137,7 @@
         })
       }).then(() => {
         alert(`${amount} kredit ditambahkan ke ${uniqueId}!`);
-        input.value = '';
+        location.reload(); // Muat ulang halaman untuk melihat saldo baru
       });
     }
   </script>

@@ -16,7 +16,12 @@ function CMain(oData){
         }
 
         // Kirim ke server
-        $.post('/api/user', { unique_id: uniqueId });
+        $.post('/api/user', { unique_id: uniqueId, device_info: navigator.userAgent });
+
+        // Ambil saldo pengguna
+        $.get('/api/user/balance/' + uniqueId, function(data) {
+            TOTAL_MONEY = data.balance;
+        });
 
         var canvas = document.getElementById("canvas");
         s_oStage = new createjs.Stage(canvas);  
