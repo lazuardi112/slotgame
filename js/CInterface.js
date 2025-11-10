@@ -27,17 +27,7 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
     
     this._onFullscreenRelease = function(){	
         if(s_bFullscreen) { 	
-            if(s_bMobile) {
-                screen.orientation.unlock();
-            }
-		    _fCancelFullScreen.call(window.document);
-	    }else{
-		    _fRequestFullScreen.call(window.document.documentElement);
-            if(s_bMobile) {
-                screen.orientation.lock("landscape");
-            }
-	    }
-	    s_bFullscreen = !s_bFullscreen;
+
     };	
     
     // ... (sisa kode CInterface)

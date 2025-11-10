@@ -1,13 +1,15 @@
 function CMenu(){
-    var _oButPlay;
-    var _oButBuyCredit;
-    var _oButWithdraw;
-    var _oButHistory;
+
     var _oAudioToggle;
     var _oButFullscreen;
     var _oFade;
     
+    var _oButWithdraw;
+    var _oButHistory;
+    var _oButDeposit;
+
     this._init = function(){
+
         var oSpriteLogo = s_oSpriteLibrary.getSprite("logo_menu");
         var oLogo = createBitmap(oSpriteLogo);
         oLogo.regX = oSpriteLogo.width/2;
@@ -37,6 +39,7 @@ function CMenu(){
             _oAudioToggle.addEventListener(ON_MOUSE_UP, this._onAudioToggle, this);
         }
         
+
         var doc = window.document;
         var docEl = doc.documentElement;
         var fRequestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
@@ -52,6 +55,7 @@ function CMenu(){
             _oButFullscreen.addEventListener(ON_MOUSE_UP, this._onFullscreenRelease, this);
         }
         
+
         _oFade = new createjs.Shape();
         _oFade.graphics.beginFill("black").drawRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT);
         s_oAttachSection.addChild(_oFade);
@@ -65,10 +69,7 @@ function CMenu(){
         _oButWithdraw.unload();
         _oButHistory.unload();
         
-        if(DISABLE_SOUND_MOBILE === false || s_bMobile === false){
-            _oAudioToggle.unload();
-        }
-        if (screenfull.isEnabled){
+
             _oButFullscreen.unload();
         }
         
@@ -76,6 +77,7 @@ function CMenu(){
         s_oMenu = null;
     };
     
+
     this._onButPlayRelease = function(){
         this.unload();
         s_oMain.gotoGame();
@@ -85,6 +87,7 @@ function CMenu(){
         Howler.mute(s_bAudioActive);
         s_bAudioActive = !s_bAudioActive;
     };
+
 
     this._onFullscreenRelease = function(){
         if(s_bFullscreen) { 
@@ -98,18 +101,7 @@ function CMenu(){
 	    }
 	    s_bFullscreen = !s_bFullscreen;
     };
-    
-    this._onBuyCredit = function(){
-        // Panggil payment panel
-    };
 
-    this._onWithdraw = function(){
-        // Logika penarikan
-    };
-
-    this._onHistory = function(){
-        // Tampilkan panel riwayat
-    };
 
     s_oMenu = this;
     

@@ -1,23 +1,14 @@
-const mysql = require('mysql2/promise');
-const dbConfig = require('./config/db');
+const mysql = require('mysql2');
+const config = require('./config/config.js');
 
-let connection;
+// Create a connection pool
+const pool = mysql.createPool({
+  connectionLimit: 10,
+  host: config.host,
+  user: config.user,
+  password: config.password,
+  database: config.database
+});
 
-async function connect() {
-    try {
-        connection = await mysql.createConnection(dbConfig);
-        console.log('Berhasil terhubung ke database MySQL.');
-    } catch (error) {
-        console.error('Kesalahan koneksi database:', error.message);
-        throw error;
-    }
-}
-
-function getConnection() {
-    return connection;
-}
-
-module.exports = {
-    connect,
-    getConnection
-};
+// Export the pool for use in other modules
+module.exports = pool;

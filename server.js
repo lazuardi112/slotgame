@@ -3,22 +3,16 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const midtrans = require('./midtrans');
+const pool = require('./database'); // Mengimpor connection pool
 
 const app = express();
 const port = 5001;
 
-// "Database" dalam memori
+// "Database" dalam memori untuk sesi dan pengaturan (data pemain akan ada di MySQL)
 const db = {
     admins: { admin: { password: 'admin123' } },
     sessions: {},
-    players: {},
-    spins: [],
-    deposits: [],
-    settings: {
-        global_rtp: 95,
-        midtrans_server_key: 'YOUR_SERVER_KEY',
-        midtrans_is_production: 'false'
-    }
+
 };
 
 midtrans.init(db.settings.midtrans_server_key, db.settings.midtrans_is_production === 'true');
@@ -45,7 +39,7 @@ app.get('/dashboard', authMiddleware, (req, res) => {
     res.sendFile(path.join(__dirname, 'admin', 'dashboard.html'));
 });
 
-// ... (semua rute API)
+
 
 
 // Middleware file statis (di akhir)
