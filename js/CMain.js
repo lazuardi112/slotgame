@@ -255,8 +255,8 @@ function CMain(oData){
         _oPreloader.unload();
         
  
-        COIN_BET = oInfos.bets;
-        START_BET = oInfos.start_bet;
+        COIN_BET = [5000, 10000, 50000, 100000, 500000, 1000000];
+        START_BET = 5000;
         MIN_BET  = oInfos.bets[0];
         MIN_REEL_LOOPS = _oData.min_reel_loop;
         REEL_DELAY = _oData.reel_delay;

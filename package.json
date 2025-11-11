@@ -1,0 +1,12 @@
+{
+  "name": "slot-machine-zeus-treasures",
+  "version": "1.0.0",
+  "description": "Slot Machine Zeus Treasures game",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}

@@ -3,9 +3,11 @@ root {
 }
 
 body{
-    background-color: #000;
-    background-repeat: repeat-x;
-    background-position: top;   
+    background: url(../sprites/bg_game.jpg) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
 }
 
 *, *:before, *:after {
@@ -28,7 +30,8 @@ input, input:before, input:after {
 ::-moz-selection { background: transparent;color:inherit; }
 
 #canvas{
-    position: fixed; 
+    position: fixed;
+    background-color: transparent;
 }
 
 canvas {

@@ -161,12 +161,20 @@ function CMenu(){
 
     this._onFullscreenRelease = function(){
         if(s_bFullscreen) { 
-		_fCancelFullScreen.call(window.document);
-	}else{
-		_fRequestFullScreen.call(window.document.documentElement);
-	}
-	
-	sizeHandler();
+            _fCancelFullScreen.call(window.document);
+            if (screen.orientation && screen.orientation.unlock) {
+                screen.orientation.unlock();
+            }
+        } else {
+            _fRequestFullScreen.call(window.document.documentElement);
+            if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock('landscape').catch(function(error) {
+                    console.warn(error);
+                });
+            }
+        }
+
+        sizeHandler();
     };
     
     this._onDeleteSavings = function(){

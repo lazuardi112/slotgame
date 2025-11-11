@@ -383,7 +383,7 @@ function refreshCredit(iCredit,oCallback, oCallbackOwner){
 };
 
 function formatEntries(iValue){
-    return iValue.toFixed(2);
+    return iValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
 function _dieError( szReason,oCallback, oCallbackOwner){
