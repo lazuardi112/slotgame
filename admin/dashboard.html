@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Dashboard</title>
+</head>
+<body>
+  <h1>Admin Dashboard</h1>
+  <h2>Global RTP</h2>
+  <form id="global-rtp-form">
+    <label for="global_rtp">Global RTP (%):</label>
+    <input type="number" id="global_rtp" name="global_rtp" min="0" max="100">
+    <button type-="submit">Save</button>
+  </form>
+
+  <h2>Users</h2>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>Device ID</th>
+        <th>Credits</th>
+        <th>User RTP (%)</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="user-table-body">
+      <!-- User data will be populated here -->
+    </tbody>
+  </table>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchUsers();
+      fetchGlobalRtp();
+    });
+
+    function fetchUsers() {
+      fetch('/api/admin/users')
+        .then(response => response.json())
+        .then(users => {
+          const tableBody = document.getElementById('user-table-body');
+          tableBody.innerHTML = '';
+          users.forEach(user => {
+            const row = `
+              <tr>
+                <td>${user.deviceId}</td>
+                <td><input type="number" value="${user.credits}" id="credits-${user.id}"></td>
+                <td><input type="number" value="${user.rtp_percentage || ''}" id="rtp-${user.id}" placeholder="Global"></td>
+                <td>
+                  <button onclick="updateUser(${user.id})">Save</button>
+                </td>
+              </tr>
+            `;
+            tableBody.innerHTML += row;
+          });
+        });
+    }
+
+    function fetchGlobalRtp() {
+        fetch('/api/admin/settings/global_rtp')
+            .then(response => response.json())
+            .then(setting => {
+                if(setting) {
+                    document.getElementById('global_rtp').value = setting.value;
+                }
+            });
+    }
+
+    document.getElementById('global-rtp-form').addEventListener('submit', event => {
+        event.preventDefault();
+        const newRtp = document.getElementById('global_rtp').value;
+        fetch('/api/admin/settings/global_rtp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ value: newRtp })
+        }).then(() => alert('Global RTP updated!'));
+    });
+
+    function updateUser(userId) {
+        const newCredits = document.getElementById(`credits-${userId}`).value;
+        const newRtp = document.getElementById(`rtp-${userId}`).value;
+
+        // Update Credits
+        fetch(`/api/admin/users/${userId}/credits`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ credits: newCredits })
+        });
+
+        // Update RTP
+        fetch(`/api/admin/users/${userId}/rtp`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ rtp: newRtp })
+        }).then(() => {
+            alert(`User ${userId} updated!`);
+            fetchUsers();
+        });
+    }
+  </script>
+</body>
+</html>
