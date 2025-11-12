@@ -29,6 +29,7 @@ function CSpriteSheetTextButton(iXPos,iYPos,oSprite,szText,szFont,szColor,iFontS
         _oButton.regX = _iWidth/2;
         _oButton.regY = _iHeight/2;
         _oButton.cursor = "pointer";
+        _oButton.hitArea = new createjs.Rectangle(0, 0, _iWidth, _iHeight);
         
         _oContainer.addChild(_oButton);
         
@@ -96,6 +97,7 @@ function CSpriteSheetTextButton(iXPos,iYPos,oSprite,szText,szFont,szColor,iFontS
     };
     
     this.buttonRelease = function(){
+        console.log("CSpriteSheetTextButton.buttonRelease called");
         if(_bDisable){
             return;
         }

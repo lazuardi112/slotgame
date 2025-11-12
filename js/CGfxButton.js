@@ -29,6 +29,10 @@ function CGfxButton(iXPos,iYPos,oSprite, oParentContainer){
         _oButton.scaleX =   _oButton.scaleY = _iScaleFactor;                         
         _oButton.regX = oSprite.width/2;
         _oButton.regY = oSprite.height/2;
+
+        var hitArea = new createjs.Shape();
+        hitArea.graphics.beginFill("#000000").drawRect(-oSprite.width/2, -oSprite.height/2, oSprite.width, oSprite.height);
+        _oButton.hitArea = hitArea;
        
         oParentContainer.addChild(_oButton);        
         
@@ -79,6 +83,7 @@ function CGfxButton(iXPos,iYPos,oSprite, oParentContainer){
     };
     
     this.buttonRelease = function(){
+        console.log("CGfxButton.buttonRelease called");
         if(_bDisabled){
             return;
         }

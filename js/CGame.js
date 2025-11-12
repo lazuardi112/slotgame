@@ -111,6 +111,7 @@ function CGame(){
         _oFrontSkin = createBitmap(s_oSpriteLibrary.getSprite('mask_slot'));
         _oFrontSkin.x = -85;
         _oFrontSkin.y = -55;
+        _oFrontSkin.mouseEnabled = false;
         _oContainerSlot.addChild(_oFrontSkin);
         
         var oData = {   // image to use
@@ -765,6 +766,7 @@ function CGame(){
     };
     
     this.onSpin = function(){
+        console.log("CGame.onSpin called");
         _iCurMinLoops = MIN_REEL_LOOPS;
         _iCurNumBonusSymbolsInReels = 0;
         _iCurNumFreespinSymbolsInReels = 0;

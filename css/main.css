@@ -3,11 +3,9 @@ root {
 }
 
 body{
-    background: url(../sprites/bg_game.jpg) no-repeat center center fixed;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
+    background-color: #000;
+    background-repeat: repeat-x;
+    background-position: top;
 }
 
 *, *:before, *:after {
@@ -31,7 +29,6 @@ input, input:before, input:after {
 
 #canvas{
     position: fixed;
-    background-color: transparent;
 }
 
 canvas {
