@@ -1,0 +1,11 @@
+
+> slot-machine-zeus-treasures@1.0.0 start
+> node server.js
+
+Executing (default): SELECT name FROM sqlite_master WHERE type='table' AND name='Users';
+Executing (default): PRAGMA INDEX_LIST(`Users`)
+Executing (default): PRAGMA INDEX_INFO(`sqlite_autoindex_Users_1`)
+Executing (default): SELECT name FROM sqlite_master WHERE type='table' AND name='GlobalSettings';
+Executing (default): PRAGMA INDEX_LIST(`GlobalSettings`)
+Executing (default): PRAGMA INDEX_INFO(`sqlite_autoindex_GlobalSettings_1`)
+Server is running on http://localhost:5001

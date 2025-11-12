@@ -67,6 +67,7 @@ async function APIAttemptSpin(iCurBet, iCoin, iNumBettingLines, oCallback, oCall
         }
 
         const data = await response.json();
+        console.log("Spin API call successful");
         
         TOTAL_MONEY = data.credits;
         
