@@ -88,6 +88,7 @@ function CMenu(){
         
         _oFade = new createjs.Shape();
         _oFade.graphics.beginFill("black").drawRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT);
+        _oFade.mouseEnabled = false;
         
         s_oAttachSection.addChild(_oFade);
         

@@ -199,6 +199,7 @@ function CGame(){
         oMaskReel.graphics.beginFill("rgba(255,0,0,0.01)").drawRect(iXPos, iYPos, 
                                                                     (SYMBOL_WIDTH *NUM_REELS) + (SPACE_BETWEEN_SYMBOLS*(NUM_REELS-1)),
                                                                     (SYMBOL_HEIGHT*NUM_ROWS) + (SPACE_HEIGHT_BETWEEN_SYMBOLS*(NUM_ROWS-1)));
+        oMaskReel.mouseEnabled = false;
         _oContainerSlot.addChild(oMaskReel);
         
         this._generateLosingPattern();
