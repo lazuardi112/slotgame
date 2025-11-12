@@ -15,7 +15,7 @@ function CMain(oData){
         s_oAttachSection = new createjs.Container();
         s_oStage.addChild(s_oAttachSection);
         s_oStage.preventSelection = false;
-        createjs.Touch.enable(s_oStage,true);
+        createjs.Touch.enable(s_oStage);
         
         s_bMobile = isMobile();
 

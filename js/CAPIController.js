@@ -45,6 +45,7 @@ async function APIgetSlotInfos(oCallback, oCallbackOwner) {
 
 // Handle a spin attempt by calling the server
 async function APIAttemptSpin(iCurBet, iCoin, iNumBettingLines, oCallback, oCallbackOwner) {
+    console.log("APIAttemptSpin called with bet:", iCurBet);
     const deviceId = getDeviceId();
 
     if (iCurBet > TOTAL_MONEY) {
