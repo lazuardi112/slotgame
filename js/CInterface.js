@@ -570,7 +570,6 @@ function CInterface(iCurBet,iTotBet,oContainerSlot){
     };
     
     this._onSpin = function(){
-        console.log("CInterface._onSpin called");
         if(_oSpinBut.getText() === TEXT_SKIP){	
             s_oGame.forceStopReel();	
             _oSpinBut.setText(TEXT_SPIN);	

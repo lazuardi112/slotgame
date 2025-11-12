@@ -85,6 +85,7 @@ function CMenu(){
         
         _oAreYouSurePanel = new CAreYouSurePanel();
         _oAreYouSurePanel.addEventListener(ON_BUT_YES_DOWN,this._onExitYes,this);
+        _oAreYouSurePanel.mouseEnabled = false;
         
         _oFade = new createjs.Shape();
         _oFade.graphics.beginFill("black").drawRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT);
@@ -103,6 +104,8 @@ function CMenu(){
     this.unload = function(){
         _oButPlay.unload(); 
         _oButPlay = null;
+
+        _oAreYouSurePanel.unload();
         
         _oButDeleteSavings.unload();
         

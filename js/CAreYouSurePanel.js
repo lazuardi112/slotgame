@@ -105,6 +105,7 @@ function CAreYouSurePanel() {
         _oButNo.unload();
         _oButYes.unload();
         _oFade.off("click",_oListenerBlock);
+        s_oStage.removeChild(_oContainer);
     };
 
     this._onButYes = function () {
